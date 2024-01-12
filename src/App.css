@@ -1,0 +1,19 @@
+
+
+h3,h5{
+  margin: 0;
+}
+
+.pageContainer{
+  
+  width: 100vw;
+  height: 100vh;
+  background-color: #29313c;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+
+
