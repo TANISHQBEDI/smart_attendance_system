@@ -1,6 +1,5 @@
-import React,{useState} from 'react'
+import React from 'react'
 import '../compCss/Home.css'
-import Login from './Login';
 
 import { Link } from 'react-router-dom';
 

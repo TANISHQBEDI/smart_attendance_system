@@ -15,5 +15,10 @@ h3,h5{
   flex-direction: column;
 }
 
+.headerContainer{
+  position: absolute;
+  top: 0;
+  color: aqua;
+}
 
 
