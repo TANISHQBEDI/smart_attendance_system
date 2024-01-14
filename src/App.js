@@ -7,6 +7,7 @@ import StudentEnroll from './components/StudentEnroll';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import { BrowserRouter as Router,Route,Routes } from 'react-router-dom';
+import Header from './components/Header';
 
 
 
@@ -17,6 +18,7 @@ function App() {
     <ErrorBoundary>
         <div className="App">
           <div className="pageContainer">
+            <Header/>
             <Router>
               <Routes>
                 <Route path='/' element={<Home/>}/>
