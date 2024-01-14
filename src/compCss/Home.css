@@ -1,0 +1,22 @@
+.homeContainer{
+    /* height: 50vh; */
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+
+.newEnrollBtn{
+    padding: .5em 0.3em;
+    margin-bottom: 1.3em;
+    border-radius: 5px;
+    background-color: #0ab3ff;
+    color: black;
+    outline: 0;
+    border: 0;
+    font-size: 1em;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+
+}

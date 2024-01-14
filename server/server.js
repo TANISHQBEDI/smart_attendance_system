@@ -19,7 +19,7 @@ const db=mysql.createConnection({
 
 
 app.post('/Login',(req,res)=>{
-    const sql="SELECT * FROM users WHERE USERNAME=? AND PASSWORD=?";
+    const sql="SELECT * FROM adminlogin WHERE USERNAME=? AND PASSWORD=?";
     const values=[
         req.body.username,
         req.body.password
@@ -27,11 +27,11 @@ app.post('/Login',(req,res)=>{
     db.query(sql,values,(err,data)=>{
         if(err) return res.json(err);
         if(data.length>0){
-            return res.json("Login Successful")
+            res.json({ status: "success", message: "Login Successful" });
             
         }
         else{
-            return res.json("Invalid Username or Password")
+            res.status(401).json({ status: "error", message: "Invalid Username or Password" });
         }
     });
 })
