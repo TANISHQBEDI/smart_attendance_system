@@ -1,13 +1,3 @@
-.loginContainer{
-    width: 100%;
-}
-
-form{
-    display: flex;
-    text-align: center;
-    flex-direction: column;
-    align-items: center;
-}
 
 span.heading{
     font-size: 1.5em;
@@ -21,14 +11,6 @@ span.text{
     padding-bottom: 1em;
 }
 
-
-.inputBox{
-    position: relative;
-    margin-bottom: 2em ;
-    width: 60%;
-    color: white;
-    
-}
 
 .icon{
     color: #fff;
@@ -60,7 +42,7 @@ span.text{
     position: relative;
     display: inline-flex;
     letter-spacing: 0.08em;
-    /* transition: all 0.5s ease-in-out; */
+    transition: all 0.5s ease-in-out;
     -webkit-transition: all 0.5s ease-in-out;
 }
 
@@ -68,7 +50,7 @@ span.text{
 .inputBox input:valid ~ label span{
     color: #0ab3ff;
     -webkit-transform: translate3d(0,-20px,0) rotate3d(0,1,0,360deg);
-    /* transform: translate3d(0,-20px,0) rotate3d(0,1,0,360deg); */
+    transform: translate3d(0,-20px,0) rotate3d(0,1,0,360deg);
 }
 
 

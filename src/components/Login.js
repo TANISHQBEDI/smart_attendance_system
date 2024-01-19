@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 
+import { useNavigate } from 'react-router-dom';
+
 import { FaRegUser,FaUnlock } from "react-icons/fa";
 
 import '../compCss/Login.css'
@@ -20,29 +22,37 @@ export default function Login
         animateLabels();
     },[])
     
+    const navigate = useNavigate();
+
     const [username,setUsername]=useState('');
     const [password,setPassword]=useState('');
 
-    function handleSubmit(event){
+    const handleSubmit=async (event)=>{
         event.preventDefault();
 
         // console.log(username," ",password)
+        const apiUrl='http://localhost:8080/api/login'
 
-        axios.post('http://localhost:8080/Login',{username,password})
-        .then(res=>{
-            console.log(res)
-            if(res.data.status==='success'){
-                window.location.href='/newstudentenroll'
+
+        try {
+            const response = await axios.post(apiUrl, {
+              username,
+              password,
+            });
+      
+            if (response.data.status === 'success') {
+              navigate('/newstudentenroll');
+            } else {
+              alert(response.data.message);
             }
-            else{
-                alert(res.data.message);
-            }
-        })
-        .catch(err=>console.log(err));
+          } catch (error) {
+            console.error('Error during login :', error);
+            alert('An error occurred during login.');
+          }
     }
     
   return (
-    <div className='loginContainer'>
+    <div className='formContainer'>
         <form onSubmit={handleSubmit}>
             <span className='heading'>ADMIN LOGIN</span>
             <div className='inputBox'>
