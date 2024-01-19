@@ -4,21 +4,76 @@ h3,h5{
   margin: 0;
 }
 
+
+/* BASIC BODY CONTAINER CSS */
+
 .pageContainer{
   
   width: 100vw;
   height: 100vh;
   background-color: #29313c;
   position: absolute;
-  display: flex;
   justify-content: center;
   flex-direction: column;
 }
 
+.bodyContainer{
+  display: flex;
+  height: 90%;
+  justify-content: center;
+  align-items: center;
+}
+
+/* BASIC BODY CONTAINER CSS */
+
+
+/* HEADER FOOTER CSS */
+
 .headerContainer{
-  position: absolute;
-  top: 0;
-  color: aqua;
+  color: whitesmoke;
+  height: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.footerContainer{
+  color: whitesmoke;
+  height: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* HEADER FOOTER CSS */
+
+
+/* FORM CSS */
+
+.formContainer{
+  width: 100%;
+}
+
+form{
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inputBox{
+  position: relative;
+  margin-bottom: 2em ;
+  width: 60%;
+  color: white;
+  
+}
+
+.formContainer:last-child input[type='file']{
+  border: none;
+  outline: none;
+  padding: 0;
+  color: whitesmoke;
 }
 
 
+/* FORM CSS */
