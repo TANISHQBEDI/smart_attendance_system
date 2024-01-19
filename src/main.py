@@ -11,7 +11,7 @@ source = cv2.VideoCapture(s)
 win_name = "Camera Preview"
 cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
 
-net = cv2.dnn.readNetFromCaffe("../faceTrackModel/deploy.prototxt", "../faceTrackModel/res10_300x300_ssd_iter_140000_fp16.caffemodel")
+net = cv2.dnn.readNetFromCaffe("../src/model/deploy.prototxt", "../src/model/res10_300x300_ssd_iter_140000_fp16.caffemodel")
 # Model parameters
 in_width = 300
 in_height = 300
