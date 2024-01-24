@@ -7,7 +7,7 @@ export default function SubjectDropdown() {
 
   const handleItemClick = async (subject) => {
     try {
-        await axios.post('http://localhost:8080/api/giveattendance');
+        await axios.post('https://c0af-144-48-178-201.ngrok-free.app/api/giveattendance');
         console.log(`Python script for ${subject} executed successfully`);
     } catch (error) {
         console.error(`Error executing Python script: ${error.message}`);
