@@ -2,7 +2,6 @@ import React,{useRef} from 'react'
 import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
 
-import * as faceapi from "face-api.js"
 
 export default function SubjectDropdown() {
   const videoRef = useRef(null);
