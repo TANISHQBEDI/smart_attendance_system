@@ -5,6 +5,9 @@ h3,h5{
 }
 
 
+
+
+
 /* BASIC BODY CONTAINER CSS */
 
 .pageContainer{
@@ -16,6 +19,8 @@ h3,h5{
   justify-content: center;
   flex-direction: column;
 }
+
+
 
 .bodyContainer{
   display: flex;
@@ -33,9 +38,28 @@ h3,h5{
   color: whitesmoke;
   height: 5%;
   display: flex;
-  justify-content: center;
+  flex-direction: row;
+  padding: 0 1.2em;
+  justify-content: space-between;
   align-items: center;
 }
+
+
+.logo{
+  height: 2.5em;
+
+}
+
+.logoTxt{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+
+
+
 .footerContainer{
   color: whitesmoke;
   height: 5%;
