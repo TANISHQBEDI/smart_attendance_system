@@ -1,31 +1,44 @@
-import React from 'react'
+import React,{useRef} from 'react'
 import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
 
+import * as faceapi from "face-api.js"
 
 export default function SubjectDropdown() {
+  const videoRef = useRef(null);
 
-  const handleItemClick = async (subject) => {
-    try {
-        await axios.post('https://45c2-2402-3a80-ca0-a65c-aca6-b11d-d84c-b2ec.ngrok-free.app/api/giveattendance');
-        console.log(`Python script for ${subject} executed successfully`);
-    } catch (error) {
-        console.error(`Error executing Python script: ${error.message}`);
-    }
-  };
+   const detectFaces = () => {
+      const video = videoRef.current;
+      // Your face detection logic here
+   };
+
+   const startCamera = async () => {
+      const video = videoRef.current;
+      // Your camera setup logic here
+      video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.addEventListener('loadeddata', () => {
+         detectFaces();
+      });
+   };
 
   return (
-    <Dropdown>
-      <Dropdown.Toggle variant="primary" id="dropdown-basic">
-        Give Attendance
-      </Dropdown.Toggle>
+    <div>
+      <Dropdown>
+        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+          Give Attendance
+        </Dropdown.Toggle>
 
-      <Dropdown.Menu>
-        <Dropdown.Item onClick={() => handleItemClick('SDN')}>SDN</Dropdown.Item>
-        <Dropdown.Item onClick={() => handleItemClick('BI')}>BI</Dropdown.Item>
-        <Dropdown.Item onClick={() => handleItemClick('HPC')}>HPC</Dropdown.Item>
-        <Dropdown.Item onClick={() => handleItemClick('DL')}>DL</Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={() => startCamera('SDN')}>SDN</Dropdown.Item>
+          <Dropdown.Item onClick={() => startCamera('BI')}>BI</Dropdown.Item>
+          <Dropdown.Item onClick={() => startCamera('HPC')}>HPC</Dropdown.Item>
+          <Dropdown.Item onClick={() => startCamera('DL')}>DL</Dropdown.Item>
+        </Dropdown.Menu>
+      
+      </Dropdown>
+      <video ref={videoRef} style={{ display: 'none' }} />
+    </div>
+    
+    
   )
 }

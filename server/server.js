@@ -140,21 +140,7 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
 })
 
 
-const {exec}=require('child_process')
 
-app.post('/api/giveattendance',(req,res)=>{
-
-    exec('python ../src/main.py', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error executing Python script: ${error}`);
-            res.status(500).send('Internal Server Error');
-        } else {
-            console.log(`Python script output: ${stdout}`);
-            res.status(200).send('Script executed successfully');
-        }
-    });
-
-})
 
 app.listen(port,(err)=>{
     if(err) console.log(err);
