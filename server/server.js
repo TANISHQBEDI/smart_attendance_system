@@ -97,7 +97,7 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
     
             const studentId = studentDataResult.insertedId;
             
-            const projectFolderPath = path.join(__dirname, '../../server/inference'); // Change 'your_project_folder' to the actual folder name
+            const projectFolderPath = path.join(__dirname, '../server/inference'); // Change 'your_project_folder' to the actual folder name
 
             for (const file of req.files) {
                 const imagePath = path.join(projectFolderPath, file.originalname);
