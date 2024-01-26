@@ -16,7 +16,7 @@ export default function StudentEnroll() {
     const handleSubmit=async (event)=>{
         event.preventDefault();
 
-        const apiUrl='https://3e95-144-48-178-201.ngrok-free.app/api/newstudentenroll';
+        const apiUrl='https://74e6-144-48-178-201.ngrok-free.app/api/newstudentenroll';
 
 
         try{

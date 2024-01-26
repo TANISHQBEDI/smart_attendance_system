@@ -60,6 +60,9 @@ const upload = multer({ storage: storage });
 
 const { Readable } = require('stream');
 
+const fs=require('fs');
+
+
 app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res)=>{
     try {
         
@@ -93,24 +96,14 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
             
     
             const studentId = studentDataResult.insertedId;
-    
-            // Store student images in GridFS
             
-            const imageVectors = [];
+            const projectFolderPath = path.join(__dirname, '../../server/inference'); // Change 'your_project_folder' to the actual folder name
 
-            const files = req.files;
-            for (const file of files) {
-                // Process each image to extract numeric representation (embedding/vector)
-                const numericVector = processImageAndGetVector(file.buffer);
+            for (const file of req.files) {
+                const imagePath = path.join(projectFolderPath, file.originalname);
 
-                imageVectors.push(numericVector);
+                fs.writeFileSync(imagePath, file.buffer);
             }
-
-            // Update student data with image vectors as JSON
-            await studentCollection.updateOne(
-                { _id: studentId },
-                { $set: { imageVectors: JSON.stringify(imageVectors) } }
-            );
     
             res.status(201).json({ message: 'Student enrolled successfully' });
         }
