@@ -1,24 +1,9 @@
-import React,{useRef} from 'react'
+import React from 'react'
 import Dropdown from 'react-bootstrap/Dropdown';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 
 export default function SubjectDropdown() {
-  const videoRef = useRef(null);
-
-   const detectFaces = () => {
-      const video = videoRef.current;
-      // Your face detection logic here
-   };
-
-   const startCamera = async () => {
-      const video = videoRef.current;
-      // Your camera setup logic here
-      video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.addEventListener('loadeddata', () => {
-         detectFaces();
-      });
-   };
 
   return (
     <div>
@@ -28,14 +13,29 @@ export default function SubjectDropdown() {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Dropdown.Item onClick={() => startCamera('SDN')}>SDN</Dropdown.Item>
-          <Dropdown.Item onClick={() => startCamera('BI')}>BI</Dropdown.Item>
-          <Dropdown.Item onClick={() => startCamera('HPC')}>HPC</Dropdown.Item>
-          <Dropdown.Item onClick={() => startCamera('DL')}>DL</Dropdown.Item>
+          <Dropdown.Item as='div'>
+            <Link to="/attendance">
+              SDN
+            </Link>
+          </Dropdown.Item>
+          <Dropdown.Item as='div'>
+            <Link to="/attendance">
+                BI
+            </Link>
+          </Dropdown.Item>
+          <Dropdown.Item as='div'>
+            <Link to="/attendance">
+              HPC
+            </Link>
+          </Dropdown.Item>
+          <Dropdown.Item as='div'>
+            <Link to="/attendance">
+              DL
+            </Link>
+          </Dropdown.Item>
         </Dropdown.Menu>
       
       </Dropdown>
-      <video ref={videoRef} style={{ display: 'none' }} />
     </div>
     
     

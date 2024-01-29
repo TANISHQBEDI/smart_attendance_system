@@ -5,13 +5,18 @@ const port=8080
 
 const app=express()
 
-app.use(cors({
-    origin: "https://smart-attendance-system-six.vercel.app"
-}));
+// app.use(cors({
+//     origin: "https://smart-attendance-system-six.vercel.app"
+// }));
+app.use(cors());
 app.use(express.json())
 
 
+
 const path=require('path')
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 require('dotenv').config({ path: path.join(__dirname,'../.env')});
 
 const { MongoClient, ServerApiVersion,GridFSBucket } = require('mongodb');
@@ -94,16 +99,31 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
                 studentyear: sYear,
             });
             
-    
             const studentId = studentDataResult.insertedId;
+
+            const images = req.files;
+        // Function to organize images into student folders
+        function organizeImages() {
             
-            const projectFolderPath = path.join(__dirname, '../server/infrence'); // Change 'your_project_folder' to the actual folder name
+            images.forEach((image, index) => {
+                const imageName = `${index + 1}.jpg`; // Naming images as 1.jpg, 2.jpg, etc.
+                const publicPath = path.join(__dirname, '../public');
+                const studentFolder = path.join(publicPath, 'infrence', sName);
 
-            for (const file of req.files) {
-                const imagePath = path.join(projectFolderPath, file.originalname);
+                // Create a folder for each student if it doesn't exist
+                if (!fs.existsSync(studentFolder)) {
+                    fs.mkdirSync(studentFolder);
+                }
 
-                fs.writeFileSync(imagePath, file.buffer);
-            }
+                const imagePath = path.join(studentFolder, imageName);
+
+                // Write the image file to the student's folder
+                fs.writeFileSync(imagePath, image.buffer);
+            });
+        }
+
+        // Call the function to organize images
+        organizeImages();
     
             res.status(201).json({ message: 'Student enrolled successfully' });
         }

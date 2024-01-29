@@ -4,7 +4,28 @@ h3,h5{
   margin: 0;
 }
 
+div.detection {
+	display: flex;
+	justify-content: center;
+	/* -webkit-transform: scaleX(-1);
+	transform: scaleX(-1); */
+  
+	background-color: black;
+	color: white;
+}
+video {
+  position: relative;
+  height: 100%;
+  width: 100%;
+	/* border-radius: 350px; */
+	/* box-shadow: 0 5px 25px rgba(119, 151, 255, 0.685); */
+}
 
+canvas {
+	position: absolute;
+  height: 100%;
+  width: 100%;
+}
 
 
 
@@ -101,3 +122,10 @@ form{
 
 
 /* FORM CSS */
+
+
+/* canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+} */
