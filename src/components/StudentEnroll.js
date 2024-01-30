@@ -1,5 +1,6 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useState,useRef } from 'react'
+// import { Button } from 'react-bootstrap'
 
 
 export default function StudentEnroll() {
@@ -9,9 +10,23 @@ export default function StudentEnroll() {
     const [sPassword,setSPassword]=useState()
     const [sBranch,setSBranch]=useState()
     const [sYear,setSYear]=useState()
-    const [selectedFiles, setSelectedFiles] = useState([]);
+    // const [selectedFiles, setSelectedFiles] = useState([]);
+    const [capturedImages, setCapturedImages] = useState([]);
+    const videoRef = useRef(null);
 
-    
+    const handleCapture = async () => {
+        if (videoRef.current) {
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.width = videoRef.current.videoWidth;
+          canvas.height = videoRef.current.videoHeight;
+          context.drawImage(videoRef.current, 0, 0);
+          const imageDataURL = canvas.toDataURL('image/jpeg');
+          const capturedImage = await fetch(imageDataURL);
+          const blob = await capturedImage.blob();
+          setCapturedImages((prevImages) => [...prevImages, blob]);
+        }
+      };
 
     const handleSubmit=async (event)=>{
         event.preventDefault();
@@ -26,9 +41,12 @@ export default function StudentEnroll() {
             formData.append('sPassword',sPassword)
             formData.append('sBranch',sBranch)
             formData.append('sYear',sYear)
-            for (let i = 0; i < selectedFiles.length; i++) {
-                formData.append(`selectedFiles`, selectedFiles[i]);
-            }
+            // for (let i = 0; i < selectedFiles.length; i++) {
+            //     formData.append(`selectedFiles`, selectedFiles[i]);
+            // }
+            capturedImages.forEach((image, index) => {
+                formData.append(`${sName}[${index}]`, image);
+              });
 
             console.log('data : ',formData)
             
@@ -91,13 +109,20 @@ export default function StudentEnroll() {
                     placeholder='Student Year'
                 ></input>
             </div>
-            <div className='inputBox'>
+            {/* <div className='inputBox'>
                 <input type='file' 
                   required 
                   accept='image/*'
                   onChange={e=>setSelectedFiles(e.target.files)}
                   multiple
                 ></input>
+            </div> */}
+            <div className="inputBox">
+                <video ref={videoRef} autoPlay playsInline muted />
+                <button onClick={handleCapture}>Capture Photo</button>
+            </div>
+            <div className='inputBox'>
+                <button > input </button>
             </div>
             <div className='inputBox'>
                 <input type='submit' value='Enter Data'></input>

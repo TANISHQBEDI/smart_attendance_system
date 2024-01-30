@@ -76,6 +76,7 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
 
         const db = client.db(dbName);
         const studentCollection = db.collection('studentdata');
+        const bucket = new GridFSBucket(db,{bucketName:'studentimages'});
 
         // Extract data from the request
         const { sName, sEmail, sPassword, sBranch, sYear } = req.body;
@@ -99,31 +100,34 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
                 studentyear: sYear,
             });
             
+    
             const studentId = studentDataResult.insertedId;
-
-            const images = req.files;
-        // Function to organize images into student folders
-        function organizeImages() {
+    
+            // Store student images in GridFS
             
-            images.forEach((image, index) => {
-                const imageName = `${index + 1}.jpg`; // Naming images as 1.jpg, 2.jpg, etc.
-                const publicPath = path.join(__dirname, '../public');
-                const studentFolder = path.join(publicPath, 'infrence', sName);
-
-                // Create a folder for each student if it doesn't exist
-                if (!fs.existsSync(studentFolder)) {
-                    fs.mkdirSync(studentFolder);
-                }
-
-                const imagePath = path.join(studentFolder, imageName);
-
-                // Write the image file to the student's folder
-                fs.writeFileSync(imagePath, image.buffer);
-            });
-        }
-
-        // Call the function to organize images
-        organizeImages();
+            const files = req.files;
+            for (const file of files) {
+    
+    
+                const readableStream = new Readable();
+                readableStream.push(file.buffer);
+                readableStream.push(null);
+    
+                const uploadStream = bucket.openUploadStream(file.originalname);
+                const uploadResult = await new Promise((resolve, reject) => {
+                    readableStream.pipe(uploadStream);
+                    uploadStream.on('error', reject);
+                    uploadStream.on('finish', () => {
+                        resolve(uploadStream.id);
+                    });
+                });
+    
+                // Associate uploaded image file IDs with student ID in your 'studentdata' collection
+                await studentCollection.updateOne(
+                    { _id: studentId },
+                    { $push: { imageIds: uploadResult } }
+                );
+            }
     
             res.status(201).json({ message: 'Student enrolled successfully' });
         }
