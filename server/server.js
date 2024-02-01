@@ -22,7 +22,9 @@ require('dotenv').config({ path: path.join(__dirname,'../.env')});
 const { MongoClient, ServerApiVersion,GridFSBucket } = require('mongodb');
 
 
-const uri = process.env.MONGO_CONNECTION_STRING;
+const uri = process.env.MONGO_CONNECTION_STRING+"=true&w=majority";
+
+// console.log(uri)
 
 const client = new MongoClient(uri);
 
@@ -60,17 +62,17 @@ app.post('/api/login', async (req, res) => {
 
 const multer = require('multer');
 
-const storage = multer.memoryStorage(); // Store files in memory
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+// console.log(upload)
 
 const { Readable } = require('stream');
 
-const fs=require('fs');
 
 
-app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res)=>{
+app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
     try {
-        
+        // console.log(req.body)
         await client.connect();
         console.log('Connected to MongoDB');
 
@@ -79,12 +81,11 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
         const bucket = new GridFSBucket(db,{bucketName:'studentimages'});
 
         // Extract data from the request
-        const { sName, sEmail, sPassword, sBranch, sYear } = req.body;
+        const { name, email, password, branch, year,images} = req.body;
 
-        console.log('req : ',req.files)
-
+        // console.log(images)
         const existingStudent = await studentCollection.findOne({
-            studentemail: sEmail,
+            studentemail: email,
             // Add other relevant fields for comparison
         });
 
@@ -93,11 +94,11 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
         }
         else{
             const studentDataResult = await studentCollection.insertOne({
-                studentname: sName,
-                studentemail: sEmail,
-                studentpassword: sPassword,
-                studentbranch: sBranch,
-                studentyear: sYear,
+                studentname: name,
+                studentemail: email,
+                studentpassword: password,
+                studentbranch: branch,
+                studentyear: year,
             });
             
     
@@ -105,15 +106,20 @@ app.post('/api/newstudentenroll',upload.array('selectedFiles', 5),async (req,res
     
             // Store student images in GridFS
             
-            const files = req.files;
+            const files = req.body.images;
             for (const file of files) {
     
-    
+                console.log(file.name)
+                console.log(file.dataURL)
+                const dataURL = file.dataURL;
+                
+                const base64Data = dataURL.split(',')[2]; // Extract base64-encoded data
+                const buffer = Buffer.from(base64Data, 'base64'); // Convert base64 to buffer
                 const readableStream = new Readable();
-                readableStream.push(file.buffer);
+                readableStream.push(buffer);
                 readableStream.push(null);
-    
-                const uploadStream = bucket.openUploadStream(file.originalname);
+                const imageName = `${file.imageName}-photo`; // Assuming imageName is present in each file object
+
                 const uploadResult = await new Promise((resolve, reject) => {
                     readableStream.pipe(uploadStream);
                     uploadStream.on('error', reject);

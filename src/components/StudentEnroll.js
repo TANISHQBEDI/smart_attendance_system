@@ -1,69 +1,109 @@
 import axios from 'axios'
-import React, { useState,useRef } from 'react'
+import React, { useState,useRef,useEffect } from 'react'
 // import { Button } from 'react-bootstrap'
 
 
 export default function StudentEnroll() {
 
-    const [sName,setSName]=useState()
-    const [sEmail,setSEmail]=useState()
-    const [sPassword,setSPassword]=useState()
-    const [sBranch,setSBranch]=useState()
-    const [sYear,setSYear]=useState()
-    // const [selectedFiles, setSelectedFiles] = useState([]);
-    const [capturedImages, setCapturedImages] = useState([]);
+    const [studentData, setStudentData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        branch: '',
+        year: '',
+        images: [],
+      });
+
+      const [videoStream, setVideoStream] = useState(null);
     const videoRef = useRef(null);
+    const canvasRef = useRef(null);
 
-    const handleCapture = async () => {
-        if (videoRef.current) {
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.width = videoRef.current.videoWidth;
-          canvas.height = videoRef.current.videoHeight;
-          context.drawImage(videoRef.current, 0, 0);
-          const imageDataURL = canvas.toDataURL('image/jpeg');
-          const capturedImage = await fetch(imageDataURL);
-          const blob = await capturedImage.blob();
-          setCapturedImages((prevImages) => [...prevImages, blob]);
+    useEffect(() => {
+        startCamera();
+        return () => {
+            stopCamera();
+        };
+    }, []);
+
+    const startCamera = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            setVideoStream(stream);
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            }
+        } catch (error) {
+            console.error('Error accessing camera:', error);
         }
-      };
+    };
 
-    const handleSubmit=async (event)=>{
-        event.preventDefault();
+    const stopCamera = () => {
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => {
+                track.stop();
+            });
+        }
+    };
 
-        const apiUrl='http://localhost:8080/api/newstudentenroll';
+    const captureImage = (e) => {
+        e.preventDefault()
+        if (canvasRef.current && videoRef.current) {
+            const canvas = canvasRef.current;
+            const video = videoRef.current;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageDataURL = canvas.toDataURL('image/jpeg');
+            const imgName=`${studentData.name}`
+            setStudentData(prevData => ({
+                ...prevData,
+                images: [...prevData.images, {name:imgName,dataURL:imageDataURL}],
+            }));
+            console.log(studentData.images)
+        }
+    };
 
+    const handleCameraToggle = (e) => {
+        e.preventDefault()
+        stopCamera();
+        startCamera();
+    };
 
-        try{
-            const formData =new FormData();
-            formData.append('sName',sName)
-            formData.append('sEmail',sEmail)
-            formData.append('sPassword',sPassword)
-            formData.append('sBranch',sBranch)
-            formData.append('sYear',sYear)
-            // for (let i = 0; i < selectedFiles.length; i++) {
-            //     formData.append(`selectedFiles`, selectedFiles[i]);
-            // }
-            capturedImages.forEach((image, index) => {
-                formData.append(`${sName}[${index}]`, image);
-              });
-
-            console.log('data : ',formData)
+    const handleStopCamera = (e) => {
+        e.preventDefault()
+        stopCamera();
+    };
+    
+      
+        const handleSubmit = async (event) => {
+            event.preventDefault();
+            console.log(studentData.name)
+            const apiUrl = 'http://localhost:8080/api/newstudentenroll';
+        
+            try {
+            const formData = new FormData();
+        
+            formData.append('name', studentData.name);
+            formData.append('email', studentData.email);
+            formData.append('password', studentData.password);
+            formData.append('branch', studentData.branch);
+            formData.append('year', studentData.year);
+            console.log(studentData.images)
+            studentData.images.forEach((image, index) => {
+                formData.append(`images[${index}]`, JSON.stringify(image));
+            });
+        
             
-            await axios.post(apiUrl, formData)
-                .then(response => {
-                    console.log(response.data);
-                    alert("Data added successfully");
-                })
-                .catch(error => {
-                    console.error('Error making API request:', error);
-                    alert("Failed to add data");
-                });
-        }catch(err){
-            console.log('Error during entry :', err);
-            alert('An error occurred during entry.');
-        }
-    }
+        
+            const response = await axios.post(apiUrl, formData);
+            console.log(response.data);
+            alert('Data added successfully');
+            } catch (error) {
+            console.error('Error making API request:', error);
+            alert('Failed to add data');
+            }
+        };
     
     
   return (
@@ -71,7 +111,7 @@ export default function StudentEnroll() {
         <form onSubmit={handleSubmit}>
             <div className='inputBox'>
                 <input 
-                    onChange={e=>setSName(e.target.value)} 
+                    onChange={e=>setStudentData({...studentData,name:e.target.value})} 
                     type='text' 
                     required 
                     placeholder='Student Name'
@@ -79,7 +119,7 @@ export default function StudentEnroll() {
             </div>
             <div className='inputBox'>
                 <input 
-                    onChange={e=>setSEmail(e.target.value)} 
+                    onChange={e=>setStudentData({...studentData,email:e.target.value})} 
                     type='email' 
                     required 
                     placeholder='Student Email'
@@ -87,7 +127,7 @@ export default function StudentEnroll() {
             </div>
             <div className='inputBox'>
                 <input 
-                    onChange={e=>setSPassword(e.target.value)}  
+                    onChange={e=>setStudentData({...studentData,password:e.target.value})}  
                     type='password' 
                     required 
                     placeholder='Student Password'
@@ -95,16 +135,16 @@ export default function StudentEnroll() {
             </div>
             <div className='inputBox'>
                 <input 
-                    onChange={e=>setSBranch(e.target.value)} 
-                    type='password' 
+                    onChange={e=>setStudentData({...studentData,branch:e.target.value})} 
+                    type='text' 
                     required 
                     placeholder='Student Branch'
                 ></input>
             </div>
             <div className='inputBox'>
                 <input 
-                    onChange={e=>setSYear(e.target.value)} 
-                    type='password' 
+                    onChange={e=>setStudentData({...studentData,year:e.target.value})} 
+                    type='text' 
                     required 
                     placeholder='Student Year'
                 ></input>
@@ -117,13 +157,13 @@ export default function StudentEnroll() {
                   multiple
                 ></input>
             </div> */}
-            <div className="inputBox">
-                <video ref={videoRef} autoPlay playsInline muted />
-                <button onClick={handleCapture}>Capture Photo</button>
-            </div>
             <div className='inputBox'>
-                <button > input </button>
-            </div>
+                    <video ref={videoRef} autoPlay playsInline />
+                    <canvas ref={canvasRef} style={{ display: 'none' }} />
+                    <button onClick={captureImage}>Capture Photo</button>
+                    <button onClick={handleCameraToggle}>Toggle Camera</button>
+                    <button onClick={handleStopCamera}>Stop Camera</button>
+                </div>
             <div className='inputBox'>
                 <input type='submit' value='Enter Data'></input>
             </div>
