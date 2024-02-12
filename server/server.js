@@ -105,21 +105,21 @@ app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
             const studentId = studentDataResult.insertedId;
     
             // Store student images in GridFS
-            
-            const files = req.body.images;
+            // const files=images.map(file=>file.buffer.toString('base64'))
+            // console.log(files)
+            const files = images;
+            console.log(files)
             for (const file of files) {
     
-                console.log(file.name)
-                console.log(file.dataURL)
-                const dataURL = file.dataURL;
-                
-                const base64Data = dataURL.split(',')[2]; // Extract base64-encoded data
+                const base64Data = file.split(',')[1]; // Extract base64-encoded data
                 const buffer = Buffer.from(base64Data, 'base64'); // Convert base64 to buffer
                 const readableStream = new Readable();
                 readableStream.push(buffer);
                 readableStream.push(null);
-                const imageName = `${file.imageName}-photo`; // Assuming imageName is present in each file object
+                const imageName = name; // Assuming imageName is present in each file object
 
+
+                const uploadStream = bucket.openUploadStream(imageName);
                 const uploadResult = await new Promise((resolve, reject) => {
                     readableStream.pipe(uploadStream);
                     uploadStream.on('error', reject);

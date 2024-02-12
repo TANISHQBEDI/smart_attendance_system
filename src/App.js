@@ -3,7 +3,7 @@ import './App.css';
 import Login from './components/Login'
 import Home from './components/Home';
 import StudentEnroll from './components/StudentEnroll';
-// import Attendance from "./components/Attendance"
+import Attendance from "./components/Attendance"
 
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -30,7 +30,7 @@ function App() {
                   <Route path='/' element={<Home/>}/>
                   <Route path='/login' element={<Login/>}/>
                   <Route path='/newstudentenroll' element={<StudentEnroll/>}/>
-                  {/* <Route path='/attendance' element={<Attendance />}/> */}
+                  <Route path='/attendance' element={<Attendance />}/>
 
                 </Routes>
               </Router>

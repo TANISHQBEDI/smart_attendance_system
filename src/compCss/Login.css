@@ -13,8 +13,14 @@ span.text{
 
 
 .icon{
-    color: #fff;
+    color: #999;
 }
+
+
+.icon.focused{
+    color: #0ab3ff;
+}
+
 
 .inputBox input{
     position: relative;
@@ -29,6 +35,11 @@ span.text{
 }
 
 
+
+
+.inputBox input:focus::placeholder{
+    color:#0ab3ff;
+}
 
 .inputBox label{
     position: absolute;

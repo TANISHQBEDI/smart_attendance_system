@@ -9,18 +9,18 @@ import '../compCss/Login.css'
 
 export default function Login
 () {
-    const animateLabels = () => {
-        document.querySelectorAll('label').forEach((label, i) => {
-            label.innerHTML = label.innerText
-                .split('')
-                .map((letters, i) => `<span style="transition-delay:${i * 50}ms">${letters}</span>`)
-                .join('');
-        });
-    };
+    // const animateLabels = () => {
+    //     document.querySelectorAll('label').forEach((label, i) => {
+    //         label.innerHTML = label.innerText
+    //             .split('')
+    //             .map((letters, i) => `<span style="transition-delay:${i * 50}ms">${letters}</span>`)
+    //             .join('');
+    //     });
+    // };
 
-    useEffect(()=>{
-        animateLabels();
-    },[])
+    // useEffect(()=>{
+    //     animateLabels();
+    // },[])
     
     const navigate = useNavigate();
 
@@ -57,13 +57,31 @@ export default function Login
             <span className='heading'>ADMIN LOGIN</span>
             <div className='inputBox'>
                 <FaRegUser className='icon' />
-                <input type='text' required onChange={e=>setUsername(e.target.value)}></input>
-                <label >Username</label>
+                <input 
+                  type='text' 
+                  required 
+                  onChange={e=>setUsername(e.target.value)} 
+                  placeholder='USERNAME'
+                  onFocus={(e)=>e.target.previousElementSibling.classList.add('focused')}
+                  onBlur={(e)=>e.target.previousElementSibling.classList.remove('focused')}
+                >
+
+                </input>
+                {/* <label >Username</label> */}
             </div>
             <div className='inputBox'>
                 <FaUnlock className='icon'/>
-                <input type='password' required onChange={e=>setPassword(e.target.value)}></input>
-                <label>Password</label>
+                <input 
+                  type='password' 
+                  required 
+                  onChange={e=>setPassword(e.target.value)} 
+                  placeholder='PASSWORD'
+                  onFocus={(e)=>e.target.previousElementSibling.classList.add('focused')}
+                  onBlur={(e)=>e.target.previousElementSibling.classList.remove('focused')}
+                >
+
+                </input>
+                {/* <label>Password</label> */}
             </div>
 
             <div className='inputBox'>

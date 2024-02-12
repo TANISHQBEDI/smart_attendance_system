@@ -1,5 +1,6 @@
 import axios from 'axios'
 import React, { useState,useRef,useEffect } from 'react'
+import Webcam from 'react-webcam';
 // import { Button } from 'react-bootstrap'
 
 
@@ -14,74 +15,41 @@ export default function StudentEnroll() {
         images: [],
       });
 
-      const [videoStream, setVideoStream] = useState(null);
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const [facingMode, setFacingMode] = useState('user'); // Initial facing mode
+    const webcamRef = useRef(null);
 
-    useEffect(() => {
-        startCamera();
-        return () => {
-            stopCamera();
-        };
-    }, []);
-
-    const startCamera = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            setVideoStream(stream);
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-            }
-        } catch (error) {
-            console.error('Error accessing camera:', error);
+    
+    const handleCameraToggle = (e) => {
+        e.preventDefault();
+        setIsCameraOpen(!isCameraOpen);
+        if (!isCameraOpen) {
+            setFacingMode('user');
         }
     };
 
-    const stopCamera = () => {
-        if (videoStream) {
-            videoStream.getTracks().forEach(track => {
-                track.stop();
-            });
-        }
+    const handleFacingModeChange = (e) => {
+        e.preventDefault();
+        setFacingMode(facingMode === 'user' ? 'environment' : 'user');
     };
 
-    const captureImage = (e) => {
-        e.preventDefault()
-        if (canvasRef.current && videoRef.current) {
-            const canvas = canvasRef.current;
-            const video = videoRef.current;
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageDataURL = canvas.toDataURL('image/jpeg');
-            const imgName=`${studentData.name}`
+    const handleCapture = async (e) => {
+        e.preventDefault();
+        if (webcamRef.current) {
+            const imageSrc = webcamRef.current.getScreenshot({ mimeType: 'image/jpeg' });
             setStudentData(prevData => ({
                 ...prevData,
-                images: [...prevData.images, {name:imgName,dataURL:imageDataURL}],
+                images: [...prevData.images, imageSrc],
             }));
             console.log(studentData.images)
         }
     };
-
-    const handleCameraToggle = (e) => {
-        e.preventDefault()
-        stopCamera();
-        startCamera();
-    };
-
-    const handleStopCamera = (e) => {
-        e.preventDefault()
-        stopCamera();
-    };
-    
       
-        const handleSubmit = async (event) => {
-            event.preventDefault();
-            console.log(studentData.name)
-            const apiUrl = 'http://localhost:8080/api/newstudentenroll';
-        
-            try {
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        console.log(studentData.name)
+        const apiUrl = 'http://localhost:8080/api/newstudentenroll';
+        try {
             const formData = new FormData();
         
             formData.append('name', studentData.name);
@@ -93,17 +61,15 @@ export default function StudentEnroll() {
             studentData.images.forEach((image, index) => {
                 formData.append(`images[${index}]`, JSON.stringify(image));
             });
-        
-            
-        
             const response = await axios.post(apiUrl, formData);
             console.log(response.data);
             alert('Data added successfully');
-            } catch (error) {
+            window.location.reload();
+        } catch (error) {
             console.error('Error making API request:', error);
             alert('Failed to add data');
             }
-        };
+    };
     
     
   return (
@@ -157,16 +123,29 @@ export default function StudentEnroll() {
                   multiple
                 ></input>
             </div> */}
-            <div className='inputBox'>
-                    <video ref={videoRef} autoPlay playsInline />
-                    <canvas ref={canvasRef} style={{ display: 'none' }} />
-                    <button onClick={captureImage}>Capture Photo</button>
-                    <button onClick={handleCameraToggle}>Toggle Camera</button>
-                    <button onClick={handleStopCamera}>Stop Camera</button>
+                {isCameraOpen && (
+                    <div className="inputBox">
+                        <Webcam
+                            ref={webcamRef}
+                            audio={false} // Disable audio if not needed
+                            screenshotFormat="image/jpeg" // Capture images as JPEG
+                            videoConstraints={{
+                                facingMode,
+                            }} // Set facing mode dynamically
+                        />
+                        <button onClick={handleCapture}>Capture Photo</button>
+                        <button onClick={handleFacingModeChange}>
+                            Switch Camera (Currently: {facingMode})
+                        </button>
+                    </div>
+                )}
+                <button onClick={handleCameraToggle}>
+                    {isCameraOpen ? 'Close Camera' : 'Open Camera'}
+                </button>
+                <div className='inputBox'>
+                    <input type='submit' value='Enter Data'></input>
                 </div>
-            <div className='inputBox'>
-                <input type='submit' value='Enter Data'></input>
-            </div>
+            
         </form>
     </div>
   )

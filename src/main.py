@@ -20,6 +20,7 @@ bucket = GridFSBucket(db, BUCKET_NAME)
 
 # Retrieve all image files
 images = []
+labels=[]
 for grid_out in bucket.find():
     try:
         image_data = grid_out.read()
@@ -28,14 +29,28 @@ for grid_out in bucket.find():
         # Decode and preprocess image as needed
         image = np.frombuffer(image_data, dtype=np.uint8)
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-        # print(image)
-        # Apply additional preprocessing steps as required
-        # ...
-
-        images.append(image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (224, 224))
+        image = image / 255.0
+        label=grid_out.filename
+        
+        if label is not None:
+            print(label)
+            images.append(image)
+            labels.append(label)
 
     except Exception as e:
         print(f"Error processing image: {e}")
+
+
+label_dict = {label: idx for idx, label in enumerate(set(labels))}
+print(label_dict)
+labels_array = np.array([label_dict[label] for label in labels])
+
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.train(images, labels_array)
+
+recognizer.save("trained_model.yml")
 
 # print(images)
 # Use the retrieved images for your ML model
@@ -44,26 +59,5 @@ for grid_out in bucket.find():
 # Close the MongoDB connection
 client.close()
 
-# for image in images:
-#     cv2.imshow("Image", image)
-#     cv2.waitKey(0)  
-#     cv2.destroyAllWindows()
 
 
-def preprocess_image(image):
-    # Convert to grayscale (if RGB)
-    if len(image.shape) == 3:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # Resize to a consistent size (e.g., 224x224 for common CNNs)
-    image = cv2.resize(image, (224, 224))
-    # Normalize pixel values to the range [0, 1]
-    image = image / 255.0
-
-
-
-    return image
-
-for image in images:
-    cv2.imshow("Image", preprocess_image(image))
-    cv2.waitKey(0)  
-    cv2.destroyAllWindows()
