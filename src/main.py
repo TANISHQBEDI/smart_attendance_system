@@ -50,6 +50,10 @@ labels_array = np.array([label_dict[label] for label in labels])
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.train(images, labels_array)
 
+
+current_file_directory = os.path.dirname(os.path.abspath(__file__)  )
+
+
 recognizer.save("trained_model.yml")
 
 # print(images)
