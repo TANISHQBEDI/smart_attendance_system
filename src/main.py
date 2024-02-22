@@ -35,7 +35,7 @@ for grid_out in bucket.find():
         label=grid_out.filename
         
         if label is not None:
-            print(label)
+            # print(label)
             images.append(image)
             labels.append(label)
 
@@ -44,7 +44,7 @@ for grid_out in bucket.find():
 
 
 label_dict = {label: idx for idx, label in enumerate(set(labels))}
-print(label_dict)
+# print(label_dict)
 labels_array = np.array([label_dict[label] for label in labels])
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -53,8 +53,9 @@ recognizer.train(images, labels_array)
 
 current_file_directory = os.path.dirname(os.path.abspath(__file__)  )
 
+file_save=os.path.join(current_file_directory,'model','trained_model.yml')
 
-recognizer.save("trained_model.yml")
+recognizer.save(file_save)
 
 # print(images)
 # Use the retrieved images for your ML model

@@ -1,4 +1,9 @@
+/* The code is a Node.js server using the Express framework. It sets up a server to handle HTTP
+requests on port 8080. */
 const express= require('express');
+
+
+// using Cross-Origin Resource Sharing to enable request from other origins
 const cors= require('cors');
 
 const port=8080
@@ -16,8 +21,13 @@ app.use(express.json())
 const path=require('path')
 
 app.use(express.static(path.join(__dirname, 'public')));
+// It is always good to import relative path
 
+// Importing environment variables from .env
 require('dotenv').config({ path: path.join(__dirname,'../.env')});
+
+
+
 
 const { MongoClient, ServerApiVersion,GridFSBucket } = require('mongodb');
 
@@ -30,46 +40,62 @@ const client = new MongoClient(uri);
 
 const dbName='student_attendance_system';
 
-// MONGO CONNECTIONS
+// Initialzing mongo connection
+
+
+// Always use try and catch as it helps in debugging and error handling
+/* The code snippet is defining a route handler for the HTTP POST request to '/api/login'. This route
+is used for user authentication and login. */
 app.post('/api/login', async (req, res) => {
     try {
         await client.connect();
-        console.log('Connected to MongoDB');
+        console.log('Connected to MongoDB'); //Connect to mongo DB server
+
 
         const db = client.db(dbName);
-        const adminCollection = db.collection('admindata');
+        const adminCollection = db.collection('admindata');    //Fetch all records from the collection 
 
-        const { username, password } = req.body;
+        const { username, password } = req.body;        //Get the  data sent by user through post request
         // console.log(adminCollection)
         const admin = await adminCollection.findOne({name:'HOD'});
+
         console.log('Received credentials:', username, password);
         console.log('db res : ',admin)
 
         if (admin && admin.password === password) {
             res.json({ status: 'success', message: 'Login Successful' });
+            //Use this to send  response back to front end and then route accordingly
         } else {
             res.status(401).json({ status: 'error', message: 'Invalid Username or Password' });
+            //This error is given when the credentials are wrong
         }
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
         res.status(500).json({ error: 'Internal Server Error' });
+        //This error is given when any problem occurs during connecting to mongo
     } finally {
         await client.close();
         console.log('MongoDB connection closed');
+        //Close the database to save resources
     }
 });
 
 
 const multer = require('multer');
+//We use multer to import large files
+
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+//The above initializes a local temporary storage to store the files
 // console.log(upload)
 
 const { Readable } = require('stream');
 
 
 
+/* The code snippet is defining a route handler for the HTTP POST request to '/api/newstudentenroll'.
+This route is used to enroll a new student in the system. */
 app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
     try {
         // console.log(req.body)
@@ -119,7 +145,7 @@ app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
                 const imageName = name; // Assuming imageName is present in each file object
 
 
-                const uploadStream = bucket.openUploadStream(imageName);
+                const uploadStream = bucket.openUploadStream(imageName);    //Upload the images to the atlas bucket 
                 const uploadResult = await new Promise((resolve, reject) => {
                     readableStream.pipe(uploadStream);
                     uploadStream.on('error', reject);
