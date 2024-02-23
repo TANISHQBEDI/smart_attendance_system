@@ -40,7 +40,7 @@ def recognize_face(frame):
                 if label == value:
                     stname= key
             label_text = f"{stname}"
-            # record_attendance(stname)
+            record_attendance(stname)
             
         else:
             label_text = "Unknown"
@@ -54,33 +54,37 @@ def record_attendance(stname):
     client = pymongo.MongoClient(MONGO_URI)
     db = client[DATABASE_NAME]
     collection = db['studentdata']
-    attendance=db['studentattendance']
+    attendance = db['studentattendance']
+
     student_doc = collection.find_one({"studentname": stname})
     if student_doc:
-        student_id=student_doc['_id']
-        # Record attendance using student_id and student_name
+        student_id = student_doc['_id']
+
         now = datetime.datetime.now()
         date_str = now.strftime("%Y-%m-%d")
-        time_str = now.strftime("%H:%M:%S")
-        query = {"student_id": student_id, "date": date_str, "time": {"$gte": time_str - timedelta(minutes=5), "$lte": time_str + timedelta(minutes=5)}}
+        time_obj = datetime.datetime.strptime(now.strftime("%H:%M:%S"), "%H:%M:%S")  # Convert time_str to datetime object
+
+        # Ensure time comparisons are made with datetime objects
+        query = {
+            "student_id": student_id,
+            "date": date_str
+        }
+
         existing_record = attendance.find_one(query)
         if existing_record is None:
             # Insert new attendance record
             data = {
-                "student_id": student_id,
+                "student_name": stname,
                 "date": date_str,
-                "time": time_str,
-                
+                "time": now.strftime("%H:%M:%S"),  # Store time as string for MongoDB
+                # ... other relevant fields
             }
             attendance.insert_one(data)
-
+        else:
+            print("Student already has attendance recorded for this time period.")
 
     else:
         print("Student not found in database.")
-        # Check for existing attendance
-    
-
-    
 
     client.close()
 
