@@ -25,9 +25,9 @@ recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read(model_path)
 
 
-import main
+import app
 
-label_dict=main.label_dict
+label_dict=app.label_dict
 stname=''
 def recognize_face(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -88,7 +88,7 @@ def record_attendance(stname):
 
     client.close()
 
-def main():
+def app():
     cap = cv2.VideoCapture(0)  # Open default camera
 
     while True:
@@ -110,4 +110,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    app()

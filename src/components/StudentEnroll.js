@@ -63,6 +63,20 @@ export default function StudentEnroll() {
             });
             const response = await axios.post(apiUrl, formData);
             console.log(response.data);
+            if (response.status === 200||response.status === 201) {
+                // Call the API endpoint to train the model
+                const trainResponse = await axios.post('http://localhost:5000/api/train-model');
+                console.log(trainResponse.data);
+          
+                // Handle successful training or display an error message
+                if (trainResponse.status === 200 ) {
+                  alert('Data added successfully. Model trained successfully!');
+                } else {
+                  alert('Data added successfully. Model training failed.');
+                }
+              } else {
+                alert('Failed to add data.');
+              }
             alert('Data added successfully');
             window.location.reload();
         } catch (error) {

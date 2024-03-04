@@ -160,7 +160,7 @@ app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
                     { $push: { imageIds: uploadResult } }
                 );
             }
-    
+            
             res.status(201).json({ message: 'Student enrolled successfully' });
         }
 
