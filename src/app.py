@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,send_from_directory
 import pymongo
 from gridfs import GridFSBucket
 import numpy as np
@@ -24,15 +24,17 @@ CORS(app, origins=['http://localhost:3000'])
 client = pymongo.MongoClient(MONGO_URI)
 
 db = client[DATABASE_NAME]
-bucket = GridFSBucket(db, BUCKET_NAME)
 
-label_dict=dict()
+
+label_dict_global=dict()
 
 # Function to train the model and save it
 # (adapted from your existing code)
+
 def train_model():
     images = []
     labels = []
+    bucket = GridFSBucket(db, BUCKET_NAME)
     for grid_out in bucket.find():
         try:
             image_data = grid_out.read()
@@ -53,6 +55,7 @@ def train_model():
         return "No images found in database for training.", 400
 
     label_dict = {label: idx for idx, label in enumerate(set(labels))}
+    label_dict_global=label_dict
     labels_array = np.array([label_dict[label] for label in labels])
 
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -69,6 +72,7 @@ def train_model():
 @app.route('/api/train-model', methods=['POST'])
 def train_model_endpoint():
     # Call the train_model function and return the response
+    
     response, status_code = train_model()
     return jsonify({'message': response}), status_code
 
@@ -77,25 +81,41 @@ def train_model_endpoint():
 import datetime
 import base64
 
+
 @app.route('/attendance/<subject>',methods=['POST'])
 def take_attendance(subject):
     try:
         def recognize_face(image):
             # Load the trained LBPH model from a file
+            
             recognizer = cv2.face.LBPHFaceRecognizer_create()
             model_path = os.path.join(os.path.dirname(__file__), 'model', 'trained_model.yml')
-            recognizer.load(model_path)
+            # print(model_path)
+            recognizer.read(model_path)
+            model_loaded = recognizer.read(model_path)
+            print("Model loaded successfully:", model_loaded)
+            print(recognizer.getThreshold())
 
             # Try to detect and recognize faces in the image
             faces, confidences = recognizer.predict(image)
 
             # Identify the first recognized face with sufficient confidence
-            if len(faces) > 0 and confidences[0] < 100:
-                label_index = faces[0]
-                # Convert label index to student name using label_dict (if applicable)
-                student_name = label_dict.get(label_index, None)
-                return student_name
+            if isinstance(faces, int):
+                # Only one face detected
+                confidence = confidences
+                if confidence < 100:
+                    # Convert label index to student name using label_dict (if applicable)
+                    student_name = label_dict_global.get(faces, None)
+                    return student_name
+                else:
+                    return None
             else:
+                # Multiple faces detected
+                for face, confidence in zip(faces, confidences):
+                    if confidence < 100:
+                        # Convert label index to student name using label_dict (if applicable)
+                        student_name = label_dict_global.get(face, None)
+                        return student_name
                 return None
         # 1. Validate request data (if applicable)
         # (e.g., check for required fields, data types)
@@ -110,12 +130,13 @@ def take_attendance(subject):
                 return jsonify({'message': 'Missing image data in request'}), 400
 
             # Decode base64 string and convert to a NumPy array
+            image_data_base64 = image_data_base64.split(",")[1]
             image_data_bytes = base64.b64decode(image_data_base64)
             # print(image_data_bytes)
             image_array = np.frombuffer(image_data_bytes, dtype=np.uint8)
-            print(image_array.shape())
+            # print(image_array.shape)
             image = cv2.imdecode(image_array, flags=cv2.IMREAD_COLOR)
-            print(image)
+            # print(image)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             image = cv2.resize(image, (224, 224))
             image = image / 255.0
@@ -132,7 +153,7 @@ def take_attendance(subject):
                 attendance = db['studentattendance']
                 attendance.insert_one(attendance_data)
 
-                return jsonify({'message': f'Attendance recorded for {student_name} in {subject_name}'})
+                return jsonify({'message': f'Attendance recorded for {student_name} in {subject}'})
             else:
                 return jsonify({'message': 'No face detected or recognized'}), 401
         else:
