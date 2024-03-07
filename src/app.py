@@ -31,6 +31,8 @@ label_dict_global=dict()
 # Function to train the model and save it
 # (adapted from your existing code)
 
+import json
+
 def train_model():
     images = []
     labels = []
@@ -54,8 +56,20 @@ def train_model():
     if len(images) == 0:
         return "No images found in database for training.", 400
 
-    label_dict = {label: idx for idx, label in enumerate(set(labels))}
-    label_dict_global=label_dict
+    label_dict = {}
+    if os.path.exists('label_dict.json'):
+        with open('label_dict.json', 'r') as json_file:
+            label_dict = json.load(json_file)
+
+    # Update label dictionary with new labels
+    new_labels = set(labels) - set(label_dict.keys())
+    label_indices = {label: idx + len(label_dict) for idx, label in enumerate(new_labels)}
+    label_dict.update(label_indices)
+
+    # Save the updated label dictionary to the JSON file
+    with open('label_dict.json', 'w') as json_file:
+        json.dump(label_dict, json_file)
+
     labels_array = np.array([label_dict[label] for label in labels])
 
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -85,6 +99,7 @@ import base64
 @app.route('/attendance/<subject>',methods=['POST'])
 def take_attendance(subject):
     try:
+        attendance = db['studentattendance']
         def recognize_face(image):
             # Load the trained LBPH model from a file
             
@@ -98,15 +113,27 @@ def take_attendance(subject):
 
             # Try to detect and recognize faces in the image
             faces, confidences = recognizer.predict(image)
+            print(faces,"  ",confidences)
+            with open('label_dict.json', 'r') as json_file:
+                label_dict = json.load(json_file)
+            print(label_dict)
 
             # Identify the first recognized face with sufficient confidence
             if isinstance(faces, int):
                 # Only one face detected
                 confidence = confidences
+                face=faces
+                print("confidence ",confidence)
                 if confidence < 100:
                     # Convert label index to student name using label_dict (if applicable)
-                    student_name = label_dict_global.get(faces, None)
-                    return student_name
+                    for key, value in label_dict.items():
+                        if face == value:
+                            student_name=key
+                            print("student_name ",student_name)
+                            return student_name
+                    # student_name = label_dict.get(faces, None)
+                    # print("student name ",student_name)
+                    # return student_name
                 else:
                     return None
             else:
@@ -114,7 +141,7 @@ def take_attendance(subject):
                 for face, confidence in zip(faces, confidences):
                     if confidence < 100:
                         # Convert label index to student name using label_dict (if applicable)
-                        student_name = label_dict_global.get(face, None)
+                        student_name = label_dict.get(face, None)
                         return student_name
                 return None
         # 1. Validate request data (if applicable)
@@ -150,7 +177,6 @@ def take_attendance(subject):
                     "subject": subject,
                     "timestamp": datetime.datetime.utcnow()  # Use appropriate timestamp format
                 }
-                attendance = db['studentattendance']
                 attendance.insert_one(attendance_data)
 
                 return jsonify({'message': f'Attendance recorded for {student_name} in {subject}'})
