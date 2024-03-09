@@ -11,7 +11,7 @@ const port=8080
 const app=express()
 
 app.use(cors({
-    origin: "https://smart-attendance-system-six.vercel.app"
+    origin: "https://smart-attendance-system-six.vercel.app/"
 }));
 // app.use(cors());
 app.use(express.json())
