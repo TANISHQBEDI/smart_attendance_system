@@ -94,12 +94,12 @@ def train_model_endpoint():
 
 import datetime
 import base64
-
+import pytz
 
 @app.route('/attendance/<subject>',methods=['POST'])
 def take_attendance(subject):
     try:
-        attendance = db['studentattendance']
+        
         def recognize_face(image):
             # Load the trained LBPH model from a file
             
@@ -171,19 +171,47 @@ def take_attendance(subject):
             if label:
                 # Identify the student based on the label or label_dict
                 student_name = label
-
-                attendance_data = {
+                timezone=pytz.timezone('Asia/Kolkata')
+                current_datetime = datetime.datetime.now(timezone)
+                date = current_datetime.date()  # Get the date
+                date_str = date.strftime("%d-%m-%Y") #Convert date to string object
+                day = current_datetime.strftime("%A")  # Get the day (e.g., Monday, Tuesday, etc.)
+                #time = current_datetime.time()  # Get the time
+                time_str = current_datetime.strftime("%I:%M:%S %p") #Convert time to string object
+                attendance = db['studentattendance']
+                existing_attendance_query = {
                     "student_name": student_name,
                     "subject": subject,
-                    "timestamp": datetime.datetime.utcnow()  # Use appropriate timestamp format
+                    "date": date_str  # Check for the same date
                 }
-                attendance.insert_one(attendance_data)
 
-                return jsonify({'message': f'Attendance recorded for {student_name} in {subject}'})
+                existing_attendance = attendance.find_one(existing_attendance_query)
+
+                if existing_attendance is None:
+                    attendance_data = {
+                        "student_name": student_name,
+                        "subject": subject,
+                        #"timestamp": datetime.datetime.utcnow(),  # Use appropriate timestamp format
+                        "date": date_str,
+                        "day": day,
+                        "time": time_str
+                    }
+
+                
+                    
+                    print("Connected to db")
+                    attendance.insert_one(attendance_data)
+                    print("Attendance added")
+                    return jsonify({'message': f'Attendance recorded for {student_name} in {subject}'})
+                    client.close()
+                else:
+                    return jsonify({'message':f'Attendance for {student_name} already recorded for {subject}'})
             else:
                 return jsonify({'message': 'No face detected or recognized'}), 401
+                client.close()
         else:
             return jsonify({'message': 'Invalid request format'}), 400
+            client.close()
         
 
     except Exception as e:
@@ -197,9 +225,9 @@ def take_attendance(subject):
 def close_connection():
     client.close()
 
-@app.teardown_appcontext
-def teardown_db(exception):
-    close_connection()  # Call the close_connection function
+# @app.teardown_appcontext
+# def teardown_db(exception):
+    #close_connection()  # Call the close_connection function
 
 if __name__ == '__main__':
     app.run(debug=True)  # Set debug=False for production
