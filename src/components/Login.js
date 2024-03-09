@@ -31,7 +31,8 @@ export default function Login
         event.preventDefault();
 
         // console.log(username," ",password)
-        const apiUrl='http://localhost:8080/api/login'
+        // const apiUrl='http://localhost:8080/api/login'
+        const apiUrl='https://2ab7-144-48-178-201.ngrok-free.app/api/login'
 
 
         try {

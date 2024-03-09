@@ -18,7 +18,8 @@ DATABASE_NAME = "student_attendance_system"
 BUCKET_NAME = "studentimages"
 
 app = Flask(__name__)
-CORS(app, origins=['http://localhost:3000'])
+# CORS(app, origins=['http://localhost:3000'])
+CORS(app, origins=['https://smart-attendance-system-six.vercel.app'])
 
 # Connect to MongoDB (same as your existing code)
 client = pymongo.MongoClient(MONGO_URI)
