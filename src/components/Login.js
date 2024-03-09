@@ -32,7 +32,7 @@ export default function Login
 
         // console.log(username," ",password)
         // const apiUrl='http://localhost:8080/api/login'
-        const apiUrl='https://2ab7-144-48-178-201.ngrok-free.app/api/login'
+        const apiUrl='https://fa92-144-48-178-201.ngrok-free.app/api/login'
 
 
         try {
