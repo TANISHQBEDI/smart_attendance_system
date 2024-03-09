@@ -54,7 +54,7 @@ const StudentDropdown = () => {
   };
 
   return (
-    <div>
+    <div className='recognitionDropdown'>
       <label htmlFor="subject">Select Subject:</label>
       <select id="subject" value={selectedSubject} onChange={handleSubjectChange}>
         <option value="">-- Select Subject --</option>

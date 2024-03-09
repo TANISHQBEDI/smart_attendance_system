@@ -18,5 +18,16 @@
     font-size: 1em;
     letter-spacing: 0.04em;
     font-weight: 500;
+}
 
+.recognitionDropdown{
+    display: flex;
+    justify-content:center ;
+    flex-direction: column;
+    align-items: center;
+}
+
+.recognitionDropdown label{
+    color: white;
+    font-size: large;
 }
