@@ -19,7 +19,7 @@ BUCKET_NAME = "studentimages"
 
 app = Flask(__name__)
 # CORS(app, origins=['http://localhost:3000'])
-CORS(app, origins=['https://smart-attendance-system-six.vercel.app'])
+CORS(app, origins=['https://smart-attendance-system-six.vercel.app','*'])
 
 # Connect to MongoDB (same as your existing code)
 client = pymongo.MongoClient(MONGO_URI)
@@ -125,7 +125,7 @@ def take_attendance(subject):
                 confidence = confidences
                 face=faces
                 print("confidence ",confidence)
-                if confidence < 100:
+                if confidence < 100 :
                     # Convert label index to student name using label_dict (if applicable)
                     for key, value in label_dict.items():
                         if face == value:

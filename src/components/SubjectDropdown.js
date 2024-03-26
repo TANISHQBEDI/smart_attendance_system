@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 
 const StudentDropdown = () => {
   const [selectedSubject, setSelectedSubject] = useState('');
+  const [capturing, setCapturing] = useState(false);
   const videoRef = useRef(null);
 
   const handleSubjectChange = (event) => {
@@ -34,10 +35,11 @@ const StudentDropdown = () => {
     }
   };
 
+
   const sendImageData = (imageData) => {
     // Send image data to backend along with selected subject
-    // fetch('http://localhost:5000/attendance/' + selectedSubject, {
-    fetch('https://598f-144-48-178-201.ngrok-free.app/attendance/' + selectedSubject, {
+    fetch('http://localhost:5000/attendance/' + selectedSubject, {
+    // fetch('https://598f-144-48-178-201.ngrok-free.app/attendance/' + selectedSubject, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,12 +48,13 @@ const StudentDropdown = () => {
     })
     .then((response) => response.json())
     .then((data) => {
+      alert(data.message)
       console.log(data);
       // Handle response from backend as needed
     })
     .catch((error) => {
       console.error('Error sending image data:', error);
-    });
+    })
   };
 
   return (
@@ -64,7 +67,7 @@ const StudentDropdown = () => {
         {/* Add more subjects as needed */}
       </select>
       <br />
-      <button onClick={handleCaptureImage}>Take Attendance</button>
+        <button onClick={handleCaptureImage}>Take Attendance</button>
       <br />
       <video ref={videoRef} width="320" height="240" autoPlay muted />
     </div>

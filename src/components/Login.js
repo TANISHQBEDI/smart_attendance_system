@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { FaRegUser,FaUnlock } from "react-icons/fa";
 
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../session/actions';
+
 import '../compCss/Login.css'
 
 export default function Login
@@ -23,6 +26,7 @@ export default function Login
     // },[])
     
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [username,setUsername]=useState('');
     const [password,setPassword]=useState('');
@@ -42,6 +46,8 @@ export default function Login
             });
       
             if (response.data.status === 'success') {
+              
+              dispatch(loginSuccess(response.data.user));
               navigate('/newstudentenroll');
             } else {
               alert(response.data.message);

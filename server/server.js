@@ -8,6 +8,8 @@ const cors= require('cors');
 
 const port=8080
 
+
+
 const app=express()
 
 
@@ -17,6 +19,8 @@ app.use(cors({
 }));
 // app.use(cors());
 app.use(express.json())
+
+
 
 
 
@@ -45,9 +49,6 @@ const dbName='student_attendance_system';
 // Initialzing mongo connection
 
 
-// Always use try and catch as it helps in debugging and error handling
-/* The code snippet is defining a route handler for the HTTP POST request to '/api/login'. This route
-is used for user authentication and login. */
 app.post('/api/login', async (req, res) => {
     try {
         await client.connect();
@@ -96,8 +97,7 @@ const { Readable } = require('stream');
 
 
 
-/* The code snippet is defining a route handler for the HTTP POST request to '/api/newstudentenroll'.
-This route is used to enroll a new student in the system. */
+
 app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
     try {
         // console.log(req.body)

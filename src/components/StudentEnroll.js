@@ -1,10 +1,25 @@
 import axios from 'axios'
 import React, { useState,useRef,useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 // import { Button } from 'react-bootstrap'
 
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../session/actions'; // Import logout action
+
 
 export default function StudentEnroll() {
+    const isLoggedIn = useSelector(state => state.isLoggedIn);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+        if(!isLoggedIn){
+            
+            navigate('/login');
+        }
+    }, [isLoggedIn])
+    
 
     const [studentData, setStudentData] = useState({
         name: '',
