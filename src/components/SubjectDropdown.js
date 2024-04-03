@@ -72,8 +72,8 @@ const StudentDropdown = () => {
 
   const sendImageData = (imageData) => {
     // Send image data to backend along with selected subject
-    fetch('http://localhost:5000/attendance/' + selectedSubject, {
-    // fetch('https://598f-144-48-178-201.ngrok-free.app/attendance/' + selectedSubject, {
+    // fetch('http://localhost:5000/attendance/' + selectedSubject, {
+    fetch('https://06dd-144-48-178-201.ngrok-free.app/attendance/' + selectedSubject, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
