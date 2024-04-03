@@ -64,7 +64,7 @@ export default function StudentEnroll() {
         event.preventDefault();
         console.log(studentData.name)
         // const apiUrl = 'http://localhost:8080/api/newstudentenroll';
-        const apiUrl = 'https://06dd-144-48-178-201.ngrok-free.app/api/newstudentenroll';
+        const apiUrl = 'https://5075-144-48-178-201.ngrok-free.app/api/newstudentenroll';    // PORT 8080
         try {
             const formData = new FormData();
         
@@ -82,7 +82,7 @@ export default function StudentEnroll() {
             if (response.status === 200||response.status === 201) {
                 // Call the API endpoint to train the model
                 // const trainResponse = await axios.post('http://localhost:5000/api/train-model');
-                const trainResponse = await axios.post('https://f0de-144-48-178-201.ngrok-free.app/api/train-model');
+                const trainResponse = await axios.post('https://32d8-144-48-178-201.ngrok-free.app/api/train-model');  //  PORT 5000
                 console.log(trainResponse.data);
           
                 // Handle successful training or display an error message
@@ -155,7 +155,7 @@ export default function StudentEnroll() {
                 ></input>
             </div> */}
                 {isCameraOpen && (
-                    <div className="inputBox">
+                    <div className="inputBox enrollInputBox">
                         <Webcam
                             ref={webcamRef}
                             audio={false} // Disable audio if not needed
@@ -163,12 +163,13 @@ export default function StudentEnroll() {
                             videoConstraints={{
                                 facingMode,
                             }} // Set facing mode dynamically
-                            className="mirror"
+                            className="mirror enrollCamera"
                         />
                         <button onClick={handleCapture}>Capture Photo</button>
                         <button onClick={handleFacingModeChange}>
                             Switch Camera (Currently: {facingMode})
                         </button>
+                        <div>Captured Images: {studentData.images.length}</div>
                     </div>
                 )}
                 <button onClick={handleCameraToggle}>

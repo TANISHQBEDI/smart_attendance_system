@@ -34,7 +34,8 @@ canvas {
 .pageContainer{
   
   width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
+  min-height: 100vh;
   background-color: #29313c;
   position: absolute;
   justify-content: center;
@@ -45,7 +46,7 @@ canvas {
 
 .bodyContainer{
   display: flex;
-  height: 90%;
+  /* height: 90vh; */
   justify-content: center;
   align-items: center;
 }

@@ -75,7 +75,7 @@ const StudentDropdown = () => {
   const sendImageData = (imageData) => {
     // Send image data to backend along with selected subject
     // fetch('http://localhost:5000/attendance/' + selectedSubject, {
-    fetch('https://f0de-144-48-178-201.ngrok-free.app/attendance/' + selectedSubject, {
+    fetch('https://32d8-144-48-178-201.ngrok-free.app/attendance/' + selectedSubject, {     //  PORT 5000
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const StudentDropdown = () => {
       <br />
         <button onClick={handleCaptureImage}>Take Attendance</button>
       <br />
-      <video ref={videoRef} width="320" height="240" autoPlay muted className="mirror"/>
+      <video ref={videoRef} width="320" height="260" autoPlay muted className="mirror"/>
     </div>
   );
 };
