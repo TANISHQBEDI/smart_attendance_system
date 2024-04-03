@@ -86,7 +86,7 @@ const StudentDropdown = () => {
     .then((data) => {
       alert(data.message)
       console.log(data);
-      window.location.reload();
+      // window.location.reload();
       // Handle response from backend as needed
     })
     .catch((error) => {
