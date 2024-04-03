@@ -26,27 +26,7 @@ client = pymongo.MongoClient(MONGO_URI)
 
 db = client[DATABASE_NAME]
 
-# Load Haar Cascade classifier for face detection
-current_file_directory = os.path.dirname(os.path.abspath(__file__))
-cascade = os.path.join(current_file_directory, 'haarcascade_frontalface_default.xml')
-face_cascade = cv2.CascadeClassifier(cascade)
-print(face_cascade)
 
-def detect_faces(image):
-    # Convert image to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Detect faces in the image
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-    
-    # Extract and return the first detected face (assuming only one face is present)
-    if len(faces) > 0:
-        x, y, w, h = faces[0]
-        face_roi = gray[y:y+h, x:x+w]
-        print(face_roi.shape)
-        return face_roi
-    else:
-        return None
 
 
 import json
@@ -55,30 +35,25 @@ def train_model():
     images = []
     labels = []
     bucket = GridFSBucket(db, BUCKET_NAME)
-    
     for grid_out in bucket.find():
         try:
             image_data = grid_out.read()
             image = np.frombuffer(image_data, dtype=np.uint8)
             image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-            
-            # Detect faces in the image
-            face_roi = detect_faces(image)
-            
-            if face_roi is not None:
-                # Resize and preprocess face region of interest
-                face_roi = cv2.resize(face_roi, (224, 224))
-                face_roi = face_roi / 255.0
-                
-                label = grid_out.filename
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = cv2.resize(image, (224, 224))
+            image = image / 255.0
+            label = grid_out.filename
 
-                images.append(face_roi)
+            if label is not None:
+                images.append(image)
                 labels.append(label)
         except Exception as e:
             print(f"Error processing image: {e}")
 
     if len(images) == 0:
-        return "No valid faces found in database for training.", 400
+        return "No images found in database for training.", 400
+
     label_dict = {}
     if os.path.exists('label_dict.json'):
         with open('label_dict.json', 'r') as json_file:
@@ -88,14 +63,13 @@ def train_model():
     new_labels = set(labels) - set(label_dict.keys())
     label_indices = {label: idx + len(label_dict) for idx, label in enumerate(new_labels)}
     label_dict.update(label_indices)
-    print(label_dict)
 
     # Save the updated label dictionary to the JSON file
     with open('label_dict.json', 'w') as json_file:
         json.dump(label_dict, json_file)
 
     labels_array = np.array([label_dict[label] for label in labels])
-    # Train the LBPH recognizer with detected faces
+
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     recognizer.train(images, labels_array)
 
@@ -105,6 +79,7 @@ def train_model():
     recognizer.save(file_save)
 
     return "Model trained successfully!", 200
+
 
 @app.route('/api/train-model', methods=['POST'])
 def train_model_endpoint():
@@ -122,40 +97,53 @@ import pytz
 @app.route('/attendance/<subject>',methods=['POST'])
 def take_attendance(subject):
     try:
+        
         def recognize_face(image):
             # Load the trained LBPH model from a file
+            
             recognizer = cv2.face.LBPHFaceRecognizer_create()
             model_path = os.path.join(os.path.dirname(__file__), 'model', 'trained_model.yml')
+            # print(model_path)
             recognizer.read(model_path)
-            print(recognizer)
+            model_loaded = recognizer.read(model_path)
+            print("Model loaded successfully:", model_loaded)
+            print(recognizer.getThreshold())
 
-            # Detect faces in the image
-            face_roi = detect_faces(image)
-            
-            if face_roi is not None:
-                # Resize and preprocess face region of interest
-                face_roi = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                face_roi = cv2.resize(face_roi, (224, 224))
-                face_roi = face_roi / 255.0
+            # Try to detect and recognize faces in the image
+            faces, confidences = recognizer.predict(image)
+            print(faces,"  ",confidences)
+            with open('label_dict.json', 'r') as json_file:
+                label_dict = json.load(json_file)
+            print(label_dict)
 
-                # Try to recognize faces in the detected face region
-                label, confidence = recognizer.predict(face_roi)
-
-                # Fetch label dictionary
-                with open('label_dict.json', 'r') as json_file:
-                    label_dict = json.load(json_file)
-                print(label," ",confidence)
-                # Identify the recognized face
-                if label in label_dict.values() and confidence < 100 and confidence > 80:
-                    student_name = list(label_dict.keys())[list(label_dict.values()).index(label)]
-                    print(student_name)
-                    return student_name
+            # Identify the first recognized face with sufficient confidence
+            if isinstance(faces, int):
+                # Only one face detected
+                confidence = confidences
+                face=faces
+                print("confidence ",confidence)
+                if confidence < 100 and confidence>70:
+                    # Convert label index to student name using label_dict (if applicable)
+                    for key, value in label_dict.items():
+                        if face == value:
+                            student_name=key
+                            print("student_name ",student_name)
+                            return student_name
+                    # student_name = label_dict.get(faces, None)
+                    # print("student name ",student_name)
+                    # return student_name
                 else:
-                    print("No face recognized")
                     return None
             else:
-                print("No face detected")
+                # Multiple faces detected
+                for face, confidence in zip(faces, confidences):
+                    confidence=confidences
+                    if confidence < 100 and confidence>70:
+                        # Convert label index to student name using label_dict (if applicable)
+                        student_name = label_dict.get(face, None)
+                        return student_name
                 return None
+
 
         if request.is_json:
             image_data_base64 = request.json.get('imageData')

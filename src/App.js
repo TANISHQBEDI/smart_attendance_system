@@ -11,6 +11,7 @@ import { BrowserRouter as Router,Route,Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import StudentDropdown from './components/SubjectDropdown';
+import AdminPortal from './components/AdminPortal';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
                   <Route path='/' element={<Home/>}/>
                   <Route path='/login' element={<Login/>}/>
                   <Route path='/newstudentenroll' element={<StudentEnroll/>}/>
+                  <Route path='/adminportal' element={<AdminPortal/>}/>
                   <Route path='/attendance' element={<StudentDropdown />}/>
 
                 </Routes>

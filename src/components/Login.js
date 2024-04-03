@@ -35,8 +35,8 @@ export default function Login
         event.preventDefault();
 
         // console.log(username," ",password)
-        // const apiUrl='http://localhost:8080/api/login'
-        const apiUrl='https://fa92-144-48-178-201.ngrok-free.app/api/login'
+        const apiUrl='http://localhost:8080/api/login'
+        // const apiUrl='https://fa92-144-48-178-201.ngrok-free.app/api/login'
 
 
         try {
@@ -48,7 +48,7 @@ export default function Login
             if (response.data.status === 'success') {
               
               dispatch(loginSuccess(response.data.user));
-              navigate('/newstudentenroll');
+              navigate('/adminportal');
             } else {
               alert(response.data.message);
             }

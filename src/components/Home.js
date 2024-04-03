@@ -10,9 +10,9 @@ export default function Home() {
   
   return (
     <div className='homeContainer'>
-        <Link to="/login"><button className='newEnrollBtn'>New Entrollment</button></Link>
+        <Link to="/login"><button className='newEnrollBtn'>Admin Login</button></Link>
 
-        <SubjectDropdown/>
+        {/* <SubjectDropdown/> */}
         
         
     </div>

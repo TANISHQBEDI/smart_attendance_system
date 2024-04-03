@@ -9,22 +9,57 @@ const StudentDropdown = () => {
     setSelectedSubject(event.target.value);
   };
 
+  // const handleCaptureImage = () => {
+  //   const videoElement = videoRef.current;
+
+  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  //     navigator.mediaDevices.getUserMedia({ video: true })
+  //       .then((stream) => {
+  //         videoElement.srcObject = stream;
+  //         videoElement.play();
+
+  //         // Capture image after 3 seconds
+  //         setTimeout(() => {
+  //           const canvas = document.createElement('canvas');
+  //           canvas.width = videoElement.videoWidth;
+  //           canvas.height = videoElement.videoHeight;
+  //           canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+  //           const imageData = canvas.toDataURL('image/jpeg');
+  //           sendImageData(imageData);
+  //         }, 3000);
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error accessing camera:', error);
+  //       });
+  //   }
+  // };
+
   const handleCaptureImage = () => {
     const videoElement = videoRef.current;
-
+  
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
+          // Stop the existing video stream
+          if (videoElement.srcObject) {
+            const tracks = videoElement.srcObject.getTracks();
+            tracks.forEach((track) => {
+              track.stop();
+            });
+          }
+  
+          // Start the new video stream
           videoElement.srcObject = stream;
           videoElement.play();
-
+  
           // Capture image after 3 seconds
           setTimeout(() => {
             const canvas = document.createElement('canvas');
             canvas.width = videoElement.videoWidth;
             canvas.height = videoElement.videoHeight;
             canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
+  
             const imageData = canvas.toDataURL('image/jpeg');
             sendImageData(imageData);
           }, 3000);
@@ -34,7 +69,6 @@ const StudentDropdown = () => {
         });
     }
   };
-
 
   const sendImageData = (imageData) => {
     // Send image data to backend along with selected subject
@@ -50,6 +84,7 @@ const StudentDropdown = () => {
     .then((data) => {
       alert(data.message)
       console.log(data);
+      window.location.reload();
       // Handle response from backend as needed
     })
     .catch((error) => {
