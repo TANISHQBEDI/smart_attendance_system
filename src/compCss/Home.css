@@ -31,3 +31,6 @@
     color: white;
     font-size: large;
 }
+.mirror{
+    transform: scaleX(-1);
+}

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import context from 'react-bootstrap/esm/AccordionContext';
 
 const StudentDropdown = () => {
   const [selectedSubject, setSelectedSubject] = useState('');
@@ -59,10 +60,11 @@ const StudentDropdown = () => {
             canvas.width = videoElement.videoWidth;
             canvas.height = videoElement.videoHeight;
             canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            
   
             const imageData = canvas.toDataURL('image/jpeg');
             sendImageData(imageData);
-          }, 3000);
+          }, 5000);
         })
         .catch((error) => {
           console.error('Error accessing camera:', error);
@@ -104,7 +106,7 @@ const StudentDropdown = () => {
       <br />
         <button onClick={handleCaptureImage}>Take Attendance</button>
       <br />
-      <video ref={videoRef} width="320" height="240" autoPlay muted />
+      <video ref={videoRef} width="320" height="240" autoPlay muted className="mirror"/>
     </div>
   );
 };

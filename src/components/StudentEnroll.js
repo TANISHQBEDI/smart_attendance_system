@@ -163,6 +163,7 @@ export default function StudentEnroll() {
                             videoConstraints={{
                                 facingMode,
                             }} // Set facing mode dynamically
+                            className="mirror"
                         />
                         <button onClick={handleCapture}>Capture Photo</button>
                         <button onClick={handleFacingModeChange}>
