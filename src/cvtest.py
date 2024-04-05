@@ -146,10 +146,14 @@ def train_model():
 
     labels_array = np.array([label_dict[label] for label in labels])
     # Train the LBPH recognizer with detected faces
-    recognizer = cv2.face.LBPHFaceRecognizer_create()
-    recognizer.setRadius(2)
-    recognizer.setNeighbors(8)
+    # recognizer = cv2.face.LBPHFaceRecognizer_create()
+    # recognizer.setRadius(2)
+    # recognizer.setNeighbors(8)
+    recognizer = cv2.face.LBPHFaceRecognizer_create(radius=1, neighbors=8, grid_x=8, grid_y=8, threshold=100)
+
     recognizer.train(images, labels_array)
+
+    print(recognizer.getThreshold())
 
     current_file_directory = os.path.dirname(os.path.abspath(__file__))
     file_save = os.path.join(current_file_directory, 'model', 'trained_model.yml')

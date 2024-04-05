@@ -49,6 +49,19 @@ def detect_faces(image):
         return None
 
 
+def preprocess_image(image):
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Perform histogram equalization for better contrast
+    gray_equalized = cv2.equalizeHist(gray)
+    
+    # Apply Gaussian blur to reduce noise
+    blurred = cv2.GaussianBlur(gray_equalized, (5, 5), 0)
+    
+    return blurred
+
+
 import json
 
 def train_model():
@@ -67,6 +80,7 @@ def train_model():
             
             if face_roi is not None:
                 # Resize and preprocess face region of interest
+                face_roi=preprocess_image(face_roi)
                 face_roi = cv2.resize(face_roi, (224, 224))
                 face_roi = face_roi / 255.0
                 
@@ -124,29 +138,32 @@ def take_attendance(subject):
     try:
         def recognize_face(image):
             # Load the trained LBPH model from a file
-            recognizer = cv2.face.LBPHFaceRecognizer_create()
+            # recognizer = cv2.face.LBPHFaceRecognizer_create()
+            recognizer = cv2.face.LBPHFaceRecognizer_create(radius=1, neighbors=8, grid_x=8, grid_y=8, threshold=100)
             model_path = os.path.join(os.path.dirname(__file__), 'model', 'trained_model.yml')
             recognizer.read(model_path)
             print(recognizer)
+            print("Threshold : ",recognizer.getThreshold())
 
             # Detect faces in the image
             face_roi = detect_faces(image)
             
+            
             if face_roi is not None:
                 # Resize and preprocess face region of interest
-                face_roi = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                # face_roi = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                # face_roi=preprocess_image(face_roi)
                 face_roi = cv2.resize(face_roi, (224, 224))
                 face_roi = face_roi / 255.0
-
                 # Try to recognize faces in the detected face region
                 label, confidence = recognizer.predict(face_roi)
 
                 # Fetch label dictionary
                 with open('label_dict.json', 'r') as json_file:
                     label_dict = json.load(json_file)
-                print(label," ",confidence)
+                print("label : ",label," confidence : ",confidence)
                 # Identify the recognized face
-                if label in label_dict.values() and confidence < 100 and confidence > 80:
+                if label in label_dict.values() and confidence < 100:
                     student_name = list(label_dict.keys())[list(label_dict.values()).index(label)]
                     print(student_name)
                     return student_name
