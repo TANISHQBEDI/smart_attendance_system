@@ -3,7 +3,7 @@ import './App.css';
 import Login from './components/Login'
 import Home from './components/Home';
 import StudentEnroll from './components/StudentEnroll';
-import Attendance from "./components/Attendance"
+import ViewAttendance from './components/ViewAttendance';
 
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -28,6 +28,7 @@ function App() {
                   <Route path='/newstudentenroll' element={<StudentEnroll/>}/>
                   <Route path='/adminportal' element={<AdminPortal/>}/>
                   <Route path='/attendance' element={<StudentDropdown />}/>
+                  <Route path='/viewattendance' element={<ViewAttendance/>}/>
 
                 </Routes>
               </Router>

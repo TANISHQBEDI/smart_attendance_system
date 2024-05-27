@@ -1,0 +1,77 @@
+Date : 2024-04-19 07:29:27
+Directory : c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system
+Total : 35 files,  123670 codes, 301 comments, 437 blanks, all 124408 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| YAML       |          2 |     69,963 |          0 |          2 |     69,965 |
+| XML        |          1 |     33,271 |         43 |          1 |     33,315 |
+| JSON       |          6 |     19,141 |          0 |          5 |     19,146 |
+| JavaScript |         15 |        572 |         86 |        177 |        835 |
+| Python     |          4 |        458 |        141 |        171 |        770 |
+| CSS        |          5 |        216 |         21 |         68 |        305 |
+| HTML       |          1 |         34 |         10 |          6 |         50 |
+| Markdown   |          1 |         15 |          0 |          7 |         22 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                     |         35 |    123,670 |        301 |        437 |    124,408 |
+| . (Files)                                                                                                             |          3 |     18,744 |          0 |          9 |     18,753 |
+| public                                                                                                                |          3 |     10,532 |         10 |          8 |     10,550 |
+| public (Files)                                                                                                        |          2 |         59 |         10 |          7 |         76 |
+| public\model                                                                                                          |          1 |     10,473 |          0 |          1 |     10,474 |
+| server                                                                                                                |          3 |        486 |         29 |         64 |        579 |
+| src                                                                                                                   |         26 |     93,908 |        262 |        356 |     94,526 |
+| src (Files)                                                                                                           |         11 |     33,898 |        207 |        234 |     34,339 |
+| src\compCss                                                                                                           |          3 |        113 |          1 |         26 |        140 |
+| src\components                                                                                                        |          9 |        383 |         54 |         88 |        525 |
+| src\model                                                                                                             |          1 |     59,490 |          0 |          1 |     59,491 |
+| src\session                                                                                                           |          2 |         24 |          0 |          7 |         31 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                              | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\SECURITY.md                             | Markdown   |         15 |          0 |          7 |         22 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\package-lock.json                       | JSON       |     18,673 |          0 |          1 |     18,674 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\package.json                            | JSON       |         56 |          0 |          1 |         57 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\public\index.html                       | HTML       |         34 |         10 |          6 |         50 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\public\manifest.json                    | JSON       |         25 |          0 |          1 |         26 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\public\model\trained_model.yml          | YAML       |     10,473 |          0 |          1 |     10,474 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\server\package-lock.json                | JSON       |        370 |          0 |          1 |        371 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\server\package.json                     | JSON       |         16 |          0 |          1 |         17 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\server\server.js                        | JavaScript |        100 |         29 |         62 |        191 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\App.css                             | CSS        |         89 |         20 |         39 |        148 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\App.js                              | JavaScript |         37 |          0 |         11 |         48 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\app.py                              | Python     |        161 |         42 |         55 |        258 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\appTest.py                          | Python     |        148 |         33 |         48 |        229 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\compCss\AdminPortal.css             | CSS        |          7 |          0 |          1 |          8 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\compCss\Home.css                    | CSS        |         43 |          1 |          5 |         49 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\compCss\Login.css                   | CSS        |         63 |          0 |         20 |         83 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\AdminPortal.js           | JavaScript |         11 |          0 |          4 |         15 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\Attendance.js            | JavaScript |         20 |          0 |          7 |         27 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\ErrorBoundary.js         | JavaScript |         25 |          1 |          7 |         33 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\Footer.js                | JavaScript |          6 |          0 |          2 |          8 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\Header.js                | JavaScript |         14 |          0 |          3 |         17 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\Home.js                  | JavaScript |         12 |          0 |          9 |         21 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\Login.js                 | JavaScript |         69 |         13 |         21 |        103 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\StudentEnroll.js         | JavaScript |        156 |         11 |         19 |        186 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\components\SubjectDropdown.js       | JavaScript |         70 |         29 |         16 |        115 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\cvtest.py                           | Python     |         69 |         59 |         36 |        164 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\haarcascade_frontalface_default.xml | XML        |     33,271 |         43 |          1 |     33,315 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\index.css                           | CSS        |         14 |          0 |          3 |         17 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\index.js                            | JavaScript |         16 |          3 |          7 |         26 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\label_dict.json                     | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\model\trained_model.yml             | YAML       |     59,490 |          0 |          1 |     59,491 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\recognize.py                        | Python     |         80 |          7 |         32 |        119 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\reportWebVitals.js                  | JavaScript |         12 |          0 |          2 |         14 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\session\actions.js                  | JavaScript |          7 |          0 |          2 |          9 |
+| c:\Users\tanis\Documents\GitHub\SmartAttendanceSystem\smart_attendance_system\src\session\store.js                    | JavaScript |         17 |          0 |          5 |         22 |
+| Total                                                                                                                 |            |    123,670 |        301 |        437 |    124,408 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

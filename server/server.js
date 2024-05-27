@@ -14,10 +14,10 @@ const app=express()
 
 
 // app.options('*',cors());
-app.use(cors({
-    origin: "https://smart-attendance-system-six.vercel.app"
-}));
-// app.use(cors());
+// app.use(cors({
+//     origin: "https://smart-attendance-system-six.vercel.app"
+// }));
+app.use(cors());
 app.use(express.json())
 
 
@@ -38,7 +38,8 @@ require('dotenv').config({ path: path.join(__dirname,'../.env')});
 const { MongoClient, ServerApiVersion,GridFSBucket } = require('mongodb');
 
 
-const uri = process.env.MONGO_CONNECTION_STRING+"=true&w=majority";
+const uri = process.env.MONGO_CONNECTION_STRING;
+// const uri = process.env.MONGO_CONNECTION_STRING+"=true&w=majority";
 
 // console.log(uri)
 
@@ -106,7 +107,11 @@ app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
 
         const db = client.db(dbName);
         const studentCollection = db.collection('studentdata');
-        const bucket = new GridFSBucket(db,{bucketName:'studentimages'});
+        const bucket = new GridFSBucket(db, { bucketName: 'studentimages' });
+        bucket.on('error', (error) => {
+            console.error('Error creating GridFS bucket:', error);
+        });
+
 
         // Extract data from the request
         const { name, email, password, branch, year,images} = req.body;
@@ -136,7 +141,7 @@ app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
             // const files=images.map(file=>file.buffer.toString('base64'))
             // console.log(files)
             const files = images;
-            console.log(files)
+            // console.log(files)
             for (const file of files) {
     
                 const base64Data = file.split(',')[1]; // Extract base64-encoded data
@@ -181,7 +186,32 @@ app.post('/api/newstudentenroll',upload.array('images[]'),async (req,res)=>{
     
 })
 
+app.get('/api/viewattendance', async (req, res) => {
+    try {
+        await client.connect();
+        console.log('Connected to MongoDB');
+        const db = client.db(dbName);
+        const Attendance=db.collection('studentattendance')
+        
+        const subject = req.query.subject;
+        let attendanceRecords;
 
+        if (subject) {
+            attendanceRecords = await Attendance.find({ subject: subject }).toArray();
+        } else {
+            attendanceRecords = await Attendance.find({}).toArray();
+        }
+
+        res.json(attendanceRecords);
+        console.log(attendanceRecords);
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    } finally{
+        await client.close();
+        console.log('MongoDB connection closed');
+    }
+});
 
 
 app.listen(port,(err)=>{

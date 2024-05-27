@@ -63,8 +63,8 @@ export default function StudentEnroll() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log(studentData.name)
-        // const apiUrl = 'http://localhost:8080/api/newstudentenroll';
-        const apiUrl = 'https://a69a-2402-8100-31b7-146e-3446-857f-e8ec-9867.ngrok-free.app/api/newstudentenroll';    // PORT 8080
+        const apiUrl = 'http://localhost:8080/api/newstudentenroll';
+        // const apiUrl = 'https://a69a-2402-8100-31b7-146e-3446-857f-e8ec-9867.ngrok-free.app/api/newstudentenroll';    // PORT 8080
         try {
             const formData = new FormData();
         
@@ -81,8 +81,8 @@ export default function StudentEnroll() {
             console.log(response.data);
             if (response.status === 200||response.status === 201) {
                 // Call the API endpoint to train the model
-                // const trainResponse = await axios.post('http://localhost:5000/api/train-model');
-                const trainResponse = await axios.post('https://6231-2402-8100-31b7-146e-3446-857f-e8ec-9867.ngrok-free.app/api/train-model');  //  PORT 5000
+                const trainResponse = await axios.post('http://localhost:5000/api/train-model');
+                // const trainResponse = await axios.post('https://6231-2402-8100-31b7-146e-3446-857f-e8ec-9867.ngrok-free.app/api/train-model');  //  PORT 5000
                 console.log(trainResponse.data);
           
                 // Handle successful training or display an error message

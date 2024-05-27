@@ -1,0 +1,47 @@
+/* App.css */
+body {
+    background-color: #29313c;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .container {
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 1200px;
+    color: white
+  }
+  
+  .table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    overflow-x: auto;
+    }
+  
+  .table th,
+  .table td {
+    /* width: fit-content; */
+    background-color: #29313c;
+    color: whitesmoke;
+    /* border: #1b2028; */
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  
+  .table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 100px; /* Minimum width to allow wrapping */
+    max-width: 300px; /* Maximum width to prevent excessive growth */
+    word-wrap: break-word; /* Wrap long words */
+  }
+  
+  @media (max-width: 768px) {
+    .table th,
+    .table td {
+      white-space: normal;
+    }
+  }
+  

@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div className='homeContainer'>
         <Link to="/login"><button className='newEnrollBtn'>Admin Login</button></Link>
-
+        <Link to="/viewattendance"><button className='newEnrollBtn'>View Attendance</button></Link>
         {/* <SubjectDropdown/> */}
         
         

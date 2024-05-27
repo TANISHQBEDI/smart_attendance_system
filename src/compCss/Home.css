@@ -47,3 +47,10 @@
     align-items: center;
     flex-direction: column;
 }
+
+
+
+.attendanceContainer{
+    color: white;
+    font-size: 0.6rem;
+}

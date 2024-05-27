@@ -64,7 +64,7 @@ const StudentDropdown = () => {
   
             const imageData = canvas.toDataURL('image/jpeg');
             sendImageData(imageData);
-          }, 5000);
+          }, 3000);
         })
         .catch((error) => {
           console.error('Error accessing camera:', error);
@@ -72,10 +72,10 @@ const StudentDropdown = () => {
     }
   };
 
-  const sendImageData = (imageData) => {
+  const sendImageData = (imageData,stream) => {
     // Send image data to backend along with selected subject
-    // fetch('http://localhost:5000/attendance/' + selectedSubject, {
-    fetch('https://6231-2402-8100-31b7-146e-3446-857f-e8ec-9867.ngrok-free.app/attendance/' + selectedSubject, {     //  PORT 5000
+    fetch('http://localhost:5000/attendance/' + selectedSubject, {
+    // fetch('https://6231-2402-8100-31b7-146e-3446-857f-e8ec-9867.ngrok-free.app/attendance/' + selectedSubject, {     //  PORT 5000
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -87,6 +87,15 @@ const StudentDropdown = () => {
       alert(data.message)
       console.log(data);
       // window.location.reload();
+      // if (videoRef.current.srcObject) {
+      //   const tracks = videoRef.current.srcObject.getTracks();
+      //   tracks.forEach((track) => {
+      //     track.stop();
+      //   });
+      // }
+      // // Restart the video stream
+      // videoRef.current.srcObject = stream;
+      // videoRef.current.play();
       // Handle response from backend as needed
     })
     .catch((error) => {

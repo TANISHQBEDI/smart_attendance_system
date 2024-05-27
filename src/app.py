@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 import pymongo
 from gridfs import GridFSBucket
 import numpy as np
@@ -6,207 +6,203 @@ import cv2  # Assuming you're using OpenCV
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS
+from tensorflow.keras.models import load_model
+from sklearn.svm import SVC
+from sklearn.preprocessing import LabelEncoder
+import pickle
+import datetime
+import base64
+import pytz
+import os
 
 # Load environment variables from .env if applicable
 load_dotenv()
 
 # Replace placeholders with your actual values
 MONGO_URI = os.getenv("MONGO_CONNECTION_STRING")
-MONGO_URI=MONGO_URI+'=true&w=majority'
 print(MONGO_URI)
 DATABASE_NAME = "student_attendance_system"
 BUCKET_NAME = "studentimages"
 
 app = Flask(__name__)
-# CORS(app, origins=['http://localhost:3000'])
-CORS(app, origins=['https://smart-attendance-system-six.vercel.app','*'])
+CORS(app, origins=['https://smart-attendance-system-six.vercel.app', '*'])
 
-# Connect to MongoDB (same as your existing code)
+# Connect to MongoDB
 client = pymongo.MongoClient(MONGO_URI)
-
 db = client[DATABASE_NAME]
 
-# Load Haar Cascade classifier for face detection
-current_file_directory = os.path.dirname(os.path.abspath(__file__))
-cascade = os.path.join(current_file_directory, 'haarcascade_frontalface_default.xml')
-face_cascade = cv2.CascadeClassifier(cascade)
-print(face_cascade)
+from keras_facenet import FaceNet
 
-def detect_faces(image):
-    # Convert image to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Detect faces in the image
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-    
-    # Extract and return the first detected face (assuming only one face is present)
-    if len(faces) > 0:
-        x, y, w, h = faces[0]
-        face_roi = gray[y:y+h, x:x+w]
-        print(face_roi.shape)
-        return face_roi
-    else:
-        return None
 
+# current_file_directory = os.path.dirname(os.path.abspath(__file__))
+# model_path = os.path.join(current_file_directory, 'face-rec_Google.h5')
+# print(current_file_directory)
+# Load FaceNet model
+# try:
+#     facenet_model = load_model(model_path)
+#     print("Facenet Model loaded")
+# except Exception as e:
+#     print(f"Error loading model: {e}")
+
+embedder = FaceNet()
 
 def preprocess_image(image):
-    # Convert the image to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Perform histogram equalization for better contrast
-    gray_equalized = cv2.equalizeHist(gray)
-    
-    # Apply Gaussian blur to reduce noise
-    blurred = cv2.GaussianBlur(gray_equalized, (5, 5), 0)
-    
-    return blurred
+    # Convert image to RGB
+    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    # Resize to 160x160 for FaceNet
+    resized_image = cv2.resize(rgb_image, (160, 160))
+    # Standardize pixel values
+    standardized_image = (resized_image - 127.5) / 127.5
+    return standardized_image
 
-
-import json
+def get_face_embeddings(image):
+    # preprocessed_image = preprocess_image(image)
+    # print(image.dtype)
+    # detections=embedder.extract(image)
+    # embeddings = embedder.embeddings(detections)
+    # return embeddings[0]
+    detections = embedder.extract(image)
+    if len(detections) > 0:
+        return detections[0]['embedding']
+    else:
+        return None
 
 def train_model():
     images = []
     labels = []
     bucket = GridFSBucket(db, BUCKET_NAME)
-    
+
     for grid_out in bucket.find():
         try:
             image_data = grid_out.read()
-            image = np.frombuffer(image_data, dtype=np.uint8)
-            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-            
-            # Detect faces in the image
-            face_roi = detect_faces(image)
-            
-            if face_roi is not None:
-                # Resize and preprocess face region of interest
-                face_roi=preprocess_image(face_roi)
-                face_roi = cv2.resize(face_roi, (224, 224))
-                face_roi = face_roi / 255.0
-                
-                label = grid_out.filename
+            image = cv2.imdecode(np.frombuffer(image_data, np.uint8), cv2.IMREAD_COLOR)
 
-                images.append(face_roi)
-                labels.append(label)
+            if image is None:
+                print("Image is None")
+                continue
+            
+            print("Image shape:", image.shape)
+            
+            # Get face embeddings
+            embeddings = get_face_embeddings(image)
+
+            if embeddings is None:
+                print("No valid face found in image")
+                continue
+
+            label = grid_out.filename
+            images.append(embeddings)
+            labels.append(label)
         except Exception as e:
             print(f"Error processing image: {e}")
 
     if len(images) == 0:
         return "No valid faces found in database for training.", 400
-    label_dict = {}
-    if os.path.exists('label_dict.json'):
-        with open('label_dict.json', 'r') as json_file:
-            label_dict = json.load(json_file)
 
-    # Update label dictionary with new labels
-    new_labels = set(labels) - set(label_dict.keys())
-    label_indices = {label: idx + len(label_dict) for idx, label in enumerate(new_labels)}
-    label_dict.update(label_indices)
-    print(label_dict)
+    print(labels)
 
-    # Save the updated label dictionary to the JSON file
-    with open('label_dict.json', 'w') as json_file:
-        json.dump(label_dict, json_file)
+    # Encode labels
+    label_encoder = LabelEncoder()
+    labels_encoded = label_encoder.fit_transform(labels)
 
-    labels_array = np.array([label_dict[label] for label in labels])
-    # Train the LBPH recognizer with detected faces
-    recognizer = cv2.face.LBPHFaceRecognizer_create()
-    recognizer.train(images, labels_array)
+    # Check if there's only one unique label (one user)
+    if len(set(labels_encoded)) == 1:
+        print("Only one unique label found, duplicating data for training stability.")
+        images = images * 2
+        labels_encoded = np.concatenate([labels_encoded, labels_encoded])
 
-    current_file_directory = os.path.dirname(os.path.abspath(__file__))
-    file_save = os.path.join(current_file_directory, 'model', 'trained_model.yml')
+    # Train SVM classifier on face embeddings
+    classifier = SVC(kernel='linear', probability=True)
+    classifier.fit(images, labels_encoded)
 
-    recognizer.save(file_save)
+    # Save the label encoder and classifier
+    with open('label_encoder.pkl', 'wb') as f:
+        pickle.dump(label_encoder, f)
+
+    with open('classifier.pkl', 'wb') as f:
+        pickle.dump(classifier, f)
 
     return "Model trained successfully!", 200
 
+
 @app.route('/api/train-model', methods=['POST'])
 def train_model_endpoint():
-    # Call the train_model function and return the response
-    
     response, status_code = train_model()
     return jsonify({'message': response}), status_code
 
+def recognize_face(image):
+    try:
+        with open('classifier.pkl', 'rb') as f:
+            classifier = pickle.load(f)
+        
+        with open('label_encoder.pkl', 'rb') as f:
+            label_encoder = pickle.load(f)
+        
+        embeddings_list = []
+        
+        for _ in range(5):  # Repeat recognition process 5 times for the same image
+            embeddings = get_face_embeddings(image)
+            if embeddings is not None:
+                embeddings_list.append(embeddings)
+        
+        if not embeddings_list:
+            print("No valid embeddings found.")
+            return None
+        
+        # Average the embeddings from multiple attempts for better recognition
+        embeddings_average = np.mean(embeddings_list, axis=0)
+        
+        predictions = classifier.predict_proba([embeddings_average])
+        best_class_indices = np.argmax(predictions, axis=1)
+        best_class_probabilities = predictions[0, best_class_indices]
+
+        # Get the predicted class label using label encoder
+        predicted_class_label = label_encoder.inverse_transform(best_class_indices)[0]
+
+        # Print the predicted class label and confidence level
+        print("Predicted class:", predicted_class_label)
+        print("Confidence level:", best_class_probabilities)
+
+        if best_class_probabilities > 0.75:  # Confidence threshold
+            student_name = label_encoder.inverse_transform(best_class_indices)[0]
+            return student_name
+        else:
+            print("Confidence below threshold.")
+            return None
+    except Exception as e:
+        print(f"Error in recognition: {e}")
+        return None
 
 
-import datetime
-import base64
-import pytz
-
-@app.route('/attendance/<subject>',methods=['POST'])
+@app.route('/attendance/<subject>', methods=['POST'])
 def take_attendance(subject):
     try:
-        def recognize_face(image):
-            # Load the trained LBPH model from a file
-            # recognizer = cv2.face.LBPHFaceRecognizer_create()
-            recognizer = cv2.face.LBPHFaceRecognizer_create(radius=1, neighbors=8, grid_x=8, grid_y=8, threshold=100)
-            model_path = os.path.join(os.path.dirname(__file__), 'model', 'trained_model.yml')
-            recognizer.read(model_path)
-            print(recognizer)
-            print("Threshold : ",recognizer.getThreshold())
-
-            # Detect faces in the image
-            face_roi = detect_faces(image)
-            
-            
-            if face_roi is not None:
-                # Resize and preprocess face region of interest
-                # face_roi = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                # face_roi=preprocess_image(face_roi)
-                face_roi = cv2.resize(face_roi, (224, 224))
-                face_roi = face_roi / 255.0
-                # Try to recognize faces in the detected face region
-                label, confidence = recognizer.predict(face_roi)
-
-                # Fetch label dictionary
-                with open('label_dict.json', 'r') as json_file:
-                    label_dict = json.load(json_file)
-                print("label : ",label," confidence : ",confidence)
-                # Identify the recognized face
-                if label in label_dict.values() and confidence < 100:
-                    student_name = list(label_dict.keys())[list(label_dict.values()).index(label)]
-                    print(student_name)
-                    return student_name
-                else:
-                    print("No face recognized")
-                    return None
-            else:
-                print("No face detected")
-                return None
-
         if request.is_json:
             image_data_base64 = request.json.get('imageData')
-            # print(image_data_base64)
             if not image_data_base64:
                 return jsonify({'message': 'Missing image data in request'}), 400
 
-            # Decode base64 string and convert to a NumPy array
             image_data_base64 = image_data_base64.split(",")[1]
             image_data_bytes = base64.b64decode(image_data_base64)
-            # print(image_data_bytes)
             image_array = np.frombuffer(image_data_bytes, dtype=np.uint8)
-            # print(image_array.shape)
             image = cv2.imdecode(image_array, flags=cv2.IMREAD_COLOR)
-            # print(image)
-            # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            # image = cv2.resize(image, (224, 224))
-            # image = image / 255.0
+
+            if image is None:
+                return jsonify({'message': 'Invalid image data'}), 400
+
             label = recognize_face(image)
             if label:
-                # Identify the student based on the label or label_dict
                 student_name = label
-                timezone=pytz.timezone('Asia/Kolkata')
+                timezone = pytz.timezone('Asia/Kolkata')
                 current_datetime = datetime.datetime.now(timezone)
-                date = current_datetime.date()  # Get the date
-                date_str = date.strftime("%d-%m-%Y") #Convert date to string object
-                day = current_datetime.strftime("%A")  # Get the day (e.g., Monday, Tuesday, etc.)
-                #time = current_datetime.time()  # Get the time
-                time_str = current_datetime.strftime("%I:%M:%S %p") #Convert time to string object
+                date_str = current_datetime.strftime("%d-%m-%Y")
+                day = current_datetime.strftime("%A")
+                time_str = current_datetime.strftime("%I:%M:%S %p")
                 attendance = db['studentattendance']
                 existing_attendance_query = {
                     "student_name": student_name,
                     "subject": subject,
-                    "date": date_str  # Check for the same date
+                    "date": date_str
                 }
 
                 existing_attendance = attendance.find_one(existing_attendance_query)
@@ -215,43 +211,26 @@ def take_attendance(subject):
                     attendance_data = {
                         "student_name": student_name,
                         "subject": subject,
-                        #"timestamp": datetime.datetime.utcnow(),  # Use appropriate timestamp format
                         "date": date_str,
                         "day": day,
                         "time": time_str
                     }
 
-                
-                    
-                    print("Connected to db")
                     attendance.insert_one(attendance_data)
-                    print("Attendance added")
                     return jsonify({'message': f'Attendance recorded for {student_name} in {subject}'})
-                    client.close()
                 else:
-                    return jsonify({'message':f'Attendance for {student_name} already recorded for {subject}'})
+                    return jsonify({'message': f'Attendance for {student_name} already recorded for {subject}'})
             else:
                 return jsonify({'message': 'No face detected or recognized'}), 401
-                client.close()
         else:
             return jsonify({'message': 'Invalid request format'}), 400
-            client.close()
-        
-
     except Exception as e:
         print(f"Error recording attendance: {e}")
         return jsonify({'message': 'Error recording attendance'}), 500
 
-
-
-
-# Close the MongoDB connection (moved to a separate function for clarity)
+# Close the MongoDB connection
 def close_connection():
     client.close()
 
-# @app.teardown_appcontext
-# def teardown_db(exception):
-    #close_connection()  # Call the close_connection function
-
 if __name__ == '__main__':
-    app.run(debug=True)  # Set debug=False for production
+    app.run(debug=True)
