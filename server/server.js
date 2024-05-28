@@ -193,7 +193,7 @@ app.get('/api/viewattendance', async (req, res) => {
         const db = client.db(dbName);
         const Attendance=db.collection('studentattendance')
         
-        const subject = req.body.subject;
+        const subject = req.query.subject;
         let attendanceRecords;
 
         if (subject) {

@@ -16,7 +16,12 @@ const AttendanceList = () => {
     const apiUrl='https://e716-144-48-178-203.ngrok-free.app/api/viewattendance'
     try {
     const response = await axios.get(apiUrl,{  //  PORT 8080
-        subject
+        params : {subject},
+        headers: {
+            'Accept': 'application/json',
+            'ngrok-skip-browser-warning': '69420' // Add your custom header here
+          },
+
       });
       console.log("Frontend records response : ",response.data)
 
