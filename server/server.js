@@ -197,13 +197,18 @@ app.get('/api/viewattendance', async (req, res) => {
         let attendanceRecords;
 
         if (subject) {
+            // console.log("Log result",await Attendance.find({ subject: subject }).toArray())
             attendanceRecords = await Attendance.find({ subject: subject }).toArray();
+            
         } else {
+            // console.log("Log result",Attendance.find().toArray())
             attendanceRecords = await Attendance.find({}).toArray();
+            
         }
-
+        console.log(typeof(attendanceRecords))
         res.json(attendanceRecords);
-        console.log(attendanceRecords);
+        // console.log(attendanceRecords);
+        
 
     } catch (err) {
         res.status(500).json({ message: err.message });
