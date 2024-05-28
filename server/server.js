@@ -205,9 +205,10 @@ app.get('/api/viewattendance', async (req, res) => {
             attendanceRecords = await Attendance.find({}).toArray();
             
         }
-        console.log(typeof(attendanceRecords))
+        
+        console.log(attendanceRecords)
         res.json(attendanceRecords);
-        // console.log(attendanceRecords);
+        
         
 
     } catch (err) {
