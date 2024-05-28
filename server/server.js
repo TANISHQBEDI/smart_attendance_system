@@ -17,7 +17,7 @@ const app=express()
 app.use(cors({
     origin: "https://smart-attendance-system-six.vercel.app"
 }));
-// app.use(cors());
+app.use(cors());
 app.use(express.json())
 
 
@@ -193,7 +193,7 @@ app.get('/api/viewattendance', async (req, res) => {
         const db = client.db(dbName);
         const Attendance=db.collection('studentattendance')
         
-        const subject = req.query.subject;
+        const subject = req.body.subject;
         let attendanceRecords;
 
         if (subject) {

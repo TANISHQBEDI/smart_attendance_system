@@ -16,10 +16,7 @@ const AttendanceList = () => {
     try {
     //   const response = await axios.get('http://localhost:8080/api/viewattendance', {
     const response = await axios.get('https://e716-144-48-178-203.ngrok-free.app/api/viewattendance',{  //  PORT 8080
-        params: { subject },
-        headers: {
-            'Accept': 'application/json',
-          },
+        subject
       });
       console.log("Frontend records response : ",response.data)
 
