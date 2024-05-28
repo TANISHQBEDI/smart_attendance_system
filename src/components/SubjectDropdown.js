@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef,useEffect } from 'react';
 import context from 'react-bootstrap/esm/AccordionContext';
 
 const StudentDropdown = () => {
@@ -74,8 +74,8 @@ const StudentDropdown = () => {
 
   const sendImageData = (imageData,stream) => {
     // Send image data to backend along with selected subject
-    fetch('http://localhost:5000/attendance/' + selectedSubject, {
-    // fetch('https://6231-2402-8100-31b7-146e-3446-857f-e8ec-9867.ngrok-free.app/attendance/' + selectedSubject, {     //  PORT 5000
+    // fetch('http://localhost:5000/attendance/' + selectedSubject, {
+    fetch('https://6944-144-48-178-203.ngrok-free.app/attendance/' + selectedSubject, {     //  PORT 5000
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -102,6 +102,27 @@ const StudentDropdown = () => {
       console.error('Error sending image data:', error);
     })
   };
+
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+
+    const stopVideoStream = () => {
+      if (videoElement.srcObject) {
+        const tracks = videoElement.srcObject.getTracks();
+        tracks.forEach((track) => {
+          track.stop();
+        });
+      }
+    };
+
+    window.addEventListener('beforeunload', stopVideoStream);
+
+    return () => {
+      window.removeEventListener('beforeunload', stopVideoStream);
+      stopVideoStream();
+    };
+  }, []);
 
   return (
     <div className='recognitionDropdown'>

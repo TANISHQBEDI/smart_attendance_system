@@ -14,10 +14,10 @@ const app=express()
 
 
 // app.options('*',cors());
-// app.use(cors({
-//     origin: "https://smart-attendance-system-six.vercel.app"
-// }));
-app.use(cors());
+app.use(cors({
+    origin: "https://smart-attendance-system-six.vercel.app"
+}));
+// app.use(cors());
 app.use(express.json())
 
 

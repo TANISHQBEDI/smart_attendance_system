@@ -3,7 +3,7 @@ body {
     background-color: #29313c;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    overflow-x: hidden;
   }
   
   .container {
@@ -17,7 +17,7 @@ body {
     width: 100%;
     margin-top: 20px;
     border-collapse: collapse;
-    overflow-x: auto;
+    /* overflow-x: auto; */
     }
   
   .table th,
@@ -42,6 +42,8 @@ body {
     .table th,
     .table td {
       white-space: normal;
+      overflow-x: auto;
     }
+    
   }
   
