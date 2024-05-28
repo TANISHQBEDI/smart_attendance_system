@@ -12,10 +12,10 @@ const AttendanceList = () => {
   const fetchAttendanceData = async (subject = '') => {
     setLoading(true);
     setError(null);
-
+    // const apiUrl='http://localhost:8080/api/viewattendance'
+    const apiUrl='https://e716-144-48-178-203.ngrok-free.app/api/viewattendance'
     try {
-    //   const response = await axios.get('http://localhost:8080/api/viewattendance', {
-    const response = await axios.get('https://e716-144-48-178-203.ngrok-free.app/api/viewattendance',{  //  PORT 8080
+    const response = await axios.get(apiUrl,{  //  PORT 8080
         subject
       });
       console.log("Frontend records response : ",response.data)
