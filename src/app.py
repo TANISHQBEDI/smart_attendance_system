@@ -163,7 +163,7 @@ def recognize_face(image):
         print("Predicted class:", predicted_class_label)
         print("Confidence level:", best_class_probabilities)
 
-        if best_class_probabilities > 0.75:  # Confidence threshold
+        if best_class_probabilities > 0.50:  # Confidence threshold
             student_name = label_encoder.inverse_transform(best_class_indices)[0]
             return student_name
         else:

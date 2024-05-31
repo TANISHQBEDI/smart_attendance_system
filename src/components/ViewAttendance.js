@@ -13,7 +13,7 @@ const AttendanceList = () => {
     setLoading(true);
     setError(null);
     // const apiUrl='http://localhost:8080/api/viewattendance'
-    const apiUrl='https://9f90-144-48-178-203.ngrok-free.app/api/viewattendance'   //8080 port
+    const apiUrl='https://decd-103-124-140-173.ngrok-free.app/api/viewattendance'   //8080 port
     try {
     const response = await axios.get(apiUrl,{  //  PORT 8080
         params : {subject},

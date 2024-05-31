@@ -75,7 +75,7 @@ const StudentDropdown = () => {
   const sendImageData = (imageData,stream) => {
     // Send image data to backend along with selected subject
     // fetch('http://localhost:5000/attendance/' + selectedSubject, {
-    fetch('https://11f0-144-48-178-203.ngrok-free.app/attendance/' + selectedSubject, {     //  PORT 5000
+    fetch('https://3136-103-124-140-173.ngrok-free.app/attendance/' + selectedSubject, {     //  PORT 5000
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
